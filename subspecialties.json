@@ -1,0 +1,82 @@
+{
+  "_note": "PubMed 檢索式可自行修改。{ANES} 會被替換成麻醉相關通用詞。",
+  "anes_terms": "(\"Anesthesia\"[MeSH] OR \"Anesthesiology\"[MeSH] OR \"Anesthetics\"[MeSH] OR anesthe*[tiab] OR anaesthe*[tiab] OR perioperative[tiab])",
+  "pubtype_filter": "(\"journal article\"[pt] OR review[pt] OR guideline[pt] OR \"practice guideline\"[pt] OR \"systematic review\"[pt] OR \"meta-analysis\"[pt]) NOT (comment[pt] OR editorial[pt] OR letter[pt] OR \"published erratum\"[pt] OR \"retraction of publication\"[pt] OR news[pt] OR \"case reports\"[pt])",
+  "language_filter": "english[la]",
+  "max_per_category": 300,
+  "keep_weeks": 26,
+  "subspecialties": [
+    {
+      "id": "general",
+      "en": "General Anesthesiology",
+      "zh": "一般麻醉",
+      "query": "(\"Anesthesiology\"[ta] OR \"Br J Anaesth\"[ta] OR \"Anesth Analg\"[ta] OR \"Anaesthesia\"[ta] OR \"Eur J Anaesthesiol\"[ta] OR \"Can J Anaesth\"[ta] OR \"J Clin Anesth\"[ta] OR \"Acta Anaesthesiol Scand\"[ta] OR \"Korean J Anesthesiol\"[ta] OR \"Minerva Anestesiol\"[ta] OR \"BMC Anesthesiol\"[ta] OR \"J Anesth\"[ta] OR \"Curr Opin Anaesthesiol\"[ta] OR \"Anaesth Crit Care Pain Med\"[ta] OR \"Perioper Med (Lond)\"[ta] OR \"BJA Open\"[ta])"
+    },
+    {
+      "id": "cardiothoracic",
+      "en": "Cardiothoracic Anesthesiology",
+      "zh": "心胸麻醉",
+      "query": "(\"J Cardiothorac Vasc Anesth\"[ta] OR ({ANES} AND (\"Cardiac Surgical Procedures\"[MeSH] OR \"Thoracic Surgical Procedures\"[MeSH] OR \"Cardiopulmonary Bypass\"[MeSH] OR \"cardiac surgery\"[tiab] OR \"thoracic surgery\"[tiab] OR \"one-lung ventilation\"[tiab] OR TAVI[tiab] OR TAVR[tiab])))"
+    },
+    {
+      "id": "neuro",
+      "en": "Neuroanesthesiology",
+      "zh": "神經麻醉",
+      "query": "(\"J Neurosurg Anesthesiol\"[ta] OR ({ANES} AND (\"Neurosurgical Procedures\"[MeSH] OR craniotomy[tiab] OR neurosurg*[tiab] OR \"Brain Injuries\"[MeSH] OR \"Postoperative Cognitive Complications\"[MeSH] OR \"Emergence Delirium\"[MeSH] OR \"postoperative delirium\"[tiab] OR \"perioperative neurocognitive\"[tiab])))"
+    },
+    {
+      "id": "pediatric",
+      "en": "Pediatric Anesthesiology",
+      "zh": "小兒麻醉",
+      "query": "(\"Paediatr Anaesth\"[ta] OR ({ANES} AND (\"Child\"[MeSH] OR \"Infant\"[MeSH] OR pediatric[tiab] OR paediatric[tiab] OR children[tiab] OR neonat*[tiab] OR infant*[tiab])))"
+    },
+    {
+      "id": "obstetric",
+      "en": "Obstetric Anesthesiology",
+      "zh": "產科麻醉",
+      "query": "(\"Int J Obstet Anesth\"[ta] OR ((\"Anesthesia, Obstetrical\"[MeSH] OR \"Analgesia, Obstetrical\"[MeSH] OR ({ANES} AND (\"Pregnancy\"[MeSH] OR \"Cesarean Section\"[MeSH] OR obstetric*[tiab] OR parturient*[tiab] OR cesarean[tiab] OR caesarean[tiab] OR \"labor analgesia\"[tiab] OR \"labour analgesia\"[tiab])))))"
+    },
+    {
+      "id": "regional",
+      "en": "Regional Anesthesiology",
+      "zh": "區域麻醉",
+      "query": "(\"Reg Anesth Pain Med\"[ta] OR \"Nerve Block\"[MeSH] OR \"Anesthesia, Conduction\"[MeSH] OR \"nerve block*\"[tiab] OR \"plane block*\"[tiab] OR \"regional anesthesia\"[tiab] OR \"regional anaesthesia\"[tiab] OR \"spinal anesthesia\"[tiab] OR \"spinal anaesthesia\"[tiab] OR \"epidural anesthesia\"[tiab] OR \"epidural analgesia\"[tiab])"
+    },
+    {
+      "id": "pain",
+      "en": "Pain Medicine",
+      "zh": "疼痛醫學",
+      "query": "(\"Pain Med\"[ta] OR \"Pain\"[ta] OR \"J Pain\"[ta] OR \"Eur J Pain\"[ta] OR \"Pain Physician\"[ta] OR \"Clin J Pain\"[ta] OR \"Pain Ther\"[ta] OR \"Pain Pract\"[ta] OR ((\"Pain, Postoperative\"[MeSH] OR \"Chronic Pain\"[MeSH] OR \"Pain Management\"[MeSH]) AND ({ANES} OR interventional[tiab] OR \"radiofrequency ablation\"[tiab] OR \"spinal cord stimulation\"[tiab])))"
+    },
+    {
+      "id": "critical",
+      "en": "Critical Care Medicine",
+      "zh": "重症醫學",
+      "query": "(\"Crit Care Med\"[ta] OR \"Intensive Care Med\"[ta] OR \"Crit Care\"[ta] OR \"Am J Respir Crit Care Med\"[ta] OR \"Ann Intensive Care\"[ta] OR \"J Crit Care\"[ta] OR \"J Intensive Care\"[ta] OR \"Crit Care Explor\"[ta] OR \"Crit Care Resusc\"[ta] OR \"Anaesth Crit Care Pain Med\"[ta])"
+    },
+    {
+      "id": "transplant",
+      "en": "Transplant Anesthesiology",
+      "zh": "移植麻醉",
+      "query": "({ANES} AND (\"Organ Transplantation\"[MeSH] OR \"Liver Transplantation\"[MeSH] OR \"Kidney Transplantation\"[MeSH] OR \"Lung Transplantation\"[MeSH] OR \"Heart Transplantation\"[MeSH] OR transplant*[tiab]))"
+    },
+    {
+      "id": "ambulatory",
+      "en": "Ambulatory Anesthesiology",
+      "zh": "門診麻醉",
+      "query": "({ANES} AND (\"Ambulatory Surgical Procedures\"[MeSH] OR ambulatory[tiab] OR \"day surgery\"[tiab] OR \"day-case\"[tiab] OR \"same-day discharge\"[tiab] OR \"office-based\"[tiab] OR \"Deep Sedation\"[MeSH] OR \"procedural sedation\"[tiab] OR endoscop*[tiab]))"
+    },
+    {
+      "id": "trauma",
+      "en": "Trauma Anesthesiology",
+      "zh": "創傷麻醉",
+      "query": "({ANES} AND (\"Wounds and Injuries\"[MeSH] OR trauma[tiab] OR traumatic[tiab] OR \"hemorrhagic shock\"[tiab] OR \"haemorrhagic shock\"[tiab] OR \"massive transfusion\"[tiab] OR \"hip fracture\"[tiab] OR burn[tiab] OR burns[tiab]))"
+    },
+    {
+      "id": "geriatric",
+      "en": "Geriatric Anesthesiology",
+      "zh": "老年麻醉",
+      "query": "({ANES} AND (\"Aged, 80 and over\"[MeSH] OR \"Frailty\"[MeSH] OR geriatric[tiab] OR elderly[tiab] OR \"older adult*\"[tiab] OR \"older patient*\"[tiab] OR frail*[tiab]))"
+    }
+  ]
+}

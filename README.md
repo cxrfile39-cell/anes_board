@@ -34,7 +34,7 @@ Critical Care · Transplant · Ambulatory · Trauma · Geriatric
 若第 5 步顯示權限錯誤，到 **Settings → Actions → General → Workflow permissions** 改為 **Read and write permissions** 後，在該次執行按 Re-run。每次更新都會 commit，repo 會保持活躍，GitHub 不會因 60 天無活動停用排程。
 
 ## 調整收錄範圍
-編輯 `scripts/subspecialties.json`：
+編輯 `subspecialties.json`：
 - `query`：各次專科 PubMed 檢索式（`{ANES}` 代表麻醉通用詞）
 - `pubtype_filter`：收錄/排除的文章類型（預設排除 comment、editorial、letter、case report）
 - `language_filter`：預設只收英文，設為 `""` 取消
@@ -42,7 +42,7 @@ Critical Care · Transplant · Ambulatory · Trauma · Geriatric
 
 ## 本機預覽
 ```bash
-python scripts/fetch_pubmed.py      # 抓最近 7 天
+python fetch_pubmed.py      # 抓最近 7 天
 python -m http.server 8000          # 開 http://localhost:8000
 ```
 （直接雙擊 index.html 無法讀取資料，需透過 http 伺服器。）
