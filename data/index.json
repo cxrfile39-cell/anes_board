@@ -1,0 +1,73 @@
+{
+ "updated": "2026-11-20T14:34:53+08:00",
+ "subspecialties": [
+  {
+   "id": "general",
+   "en": "General Anesthesiology",
+   "zh": "一般麻醉"
+  },
+  {
+   "id": "cardiothoracic",
+   "en": "Cardiothoracic Anesthesiology",
+   "zh": "心胸麻醉"
+  },
+  {
+   "id": "neuro",
+   "en": "Neuroanesthesiology",
+   "zh": "神經麻醉"
+  },
+  {
+   "id": "pediatric",
+   "en": "Pediatric Anesthesiology",
+   "zh": "小兒麻醉"
+  },
+  {
+   "id": "obstetric",
+   "en": "Obstetric Anesthesiology",
+   "zh": "產科麻醉"
+  },
+  {
+   "id": "regional",
+   "en": "Regional Anesthesiology",
+   "zh": "區域麻醉"
+  },
+  {
+   "id": "pain",
+   "en": "Pain Medicine",
+   "zh": "疼痛醫學"
+  },
+  {
+   "id": "critical",
+   "en": "Critical Care Medicine",
+   "zh": "重症醫學"
+  },
+  {
+   "id": "transplant",
+   "en": "Transplant Anesthesiology",
+   "zh": "移植麻醉"
+  },
+  {
+   "id": "ambulatory",
+   "en": "Ambulatory Anesthesiology",
+   "zh": "門診麻醉"
+  },
+  {
+   "id": "trauma",
+   "en": "Trauma Anesthesiology",
+   "zh": "創傷麻醉"
+  },
+  {
+   "id": "geriatric",
+   "en": "Geriatric Anesthesiology",
+   "zh": "老年麻醉"
+  }
+ ],
+ "weeks": [
+  {
+   "week": "2026-11-19",
+   "from": "2026-10-23",
+   "to": "2026-11-19",
+   "total": 1845
+  }
+ ]
+}
