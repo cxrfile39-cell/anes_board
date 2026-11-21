@@ -5,69 +5,81 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>麻醉次專科文獻週報 | Anesthesiology Weekly Digest</title>
 <style>
+  /* 雙色主題：主色 深青 teal ＋ 強調色 橘 orange */
   :root{
-    --bg:#f6f7f9; --card:#fff; --ink:#1c2430; --muted:#5d6b7e; --line:#e2e6ec;
-    --accent:#0f6e8c; --accent-soft:#e3f1f5;
-    --art:#2f6fd0; --rev:#8a4fc4; --gl:#c2531c;
+    --c1:#0d5c6e; --c1-dark:#08404d; --c1-soft:#e2f0f2;
+    --c2:#e8792e; --c2-soft:#fdeee2;
+    --bg:#f4f7f8; --card:#fff; --on:#fff; --ink:#1b2a30; --muted:#5b6d74; --line:#dde6e8;
   }
   @media (prefers-color-scheme: dark){
-    :root{--bg:#12161c;--card:#1b2129;--ink:#e6ebf1;--muted:#9aa7b7;--line:#2c3540;
-      --accent:#4fb3d1;--accent-soft:#1d3640;--art:#6ea0f0;--rev:#b98ae6;--gl:#ee8d5b;}
+    :root{--c1:#4fb8c9;--c1-dark:#0b3540;--c1-soft:#16343b;--c2:#f29a55;--c2-soft:#3a2a1e;
+      --bg:#10171a;--card:#182226;--on:#0c1a1e;--ink:#e5eef0;--muted:#97a9ae;--line:#2a383d;}
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
     background:var(--bg);color:var(--ink);line-height:1.55}
-  header{background:var(--card);border-bottom:1px solid var(--line);padding:20px 16px 14px}
+  header{background:linear-gradient(135deg,#0d5c6e 0%,#08404d 100%);color:#fff;padding:22px 16px 18px;border-bottom:4px solid var(--c2)}
   .wrap{max-width:1180px;margin:0 auto}
-  h1{margin:0;font-size:1.45rem}
-  .sub{color:var(--muted);font-size:.9rem;margin-top:4px}
+  h1{margin:0;font-size:1.5rem;letter-spacing:.02em}
+  h1 .hl{color:var(--c2)}
+  @media (prefers-color-scheme: dark){ h1 .hl{color:#f6a868} }
+  .sub{color:rgba(255,255,255,.78);font-size:.9rem;margin-top:4px}
   main.wrap{display:grid;grid-template-columns:300px 1fr;gap:20px;padding:20px 16px 60px}
   @media (max-width:860px){main.wrap{grid-template-columns:1fr}}
   aside{position:sticky;top:12px;align-self:start;display:flex;flex-direction:column;gap:14px}
   @media (max-width:860px){aside{position:static}}
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
-  .panel h2{font-size:.95rem;margin:0 0 10px;display:flex;justify-content:space-between;align-items:center}
+  .panel{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c1);border-radius:12px;padding:14px}
+  .panel h2{font-size:.95rem;margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;color:var(--c1)}
   .btns{display:flex;gap:6px}
   button{font:inherit;font-size:.8rem;border:1px solid var(--line);background:var(--bg);color:var(--ink);
     border-radius:7px;padding:4px 10px;cursor:pointer}
-  button:hover{border-color:var(--accent);color:var(--accent)}
+  button:hover{border-color:var(--c2);color:var(--c2)}
+  .btns button:first-child{background:var(--c1);border-color:var(--c1);color:var(--on)}
+  .btns button:first-child:hover{filter:brightness(1.1);background:var(--c1);color:var(--on)}
+  .btns button:last-child{background:var(--card);border-color:var(--c2);color:var(--c2)}
+  .btns button:last-child:hover{background:var(--c2);color:var(--on)}
+  button:disabled{opacity:.4;cursor:default}
   label.opt{display:flex;align-items:center;gap:8px;padding:5px 4px;border-radius:6px;cursor:pointer;font-size:.9rem}
-  label.opt:hover{background:var(--accent-soft)}
-  label.opt input{accent-color:var(--accent);width:16px;height:16px;flex:none}
+  label.opt:hover{background:var(--c1-soft)}
+  label.opt input{accent-color:var(--c1);width:16px;height:16px;flex:none}
   label.opt .name{flex:1}
   label.opt .en{display:block;color:var(--muted);font-size:.74rem;line-height:1.2}
-  .cnt{font-size:.75rem;color:var(--muted);background:var(--bg);border-radius:10px;padding:1px 8px;font-variant-numeric:tabular-nums}
+  .cnt{font-size:.75rem;color:var(--c1);background:var(--c1-soft);border-radius:10px;padding:1px 8px;font-variant-numeric:tabular-nums;font-weight:600}
   select,input[type=search]{width:100%;font:inherit;font-size:.9rem;padding:7px 9px;border:1px solid var(--line);
-    border-radius:8px;background:var(--bg);color:var(--ink)}
+    border-radius:8px;background:var(--card);color:var(--ink)}
+  select:focus,input[type=search]:focus{outline:2px solid var(--c2);outline-offset:-1px;border-color:transparent}
   .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
   .toolbar input[type=search]{flex:1;min-width:200px}
   .toolbar select{width:auto}
   .summary{color:var(--muted);font-size:.88rem;margin-bottom:10px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--c1);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+  .card.t-guideline{border-left-color:var(--c2)}
   .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.78rem;color:var(--muted);margin-bottom:6px}
-  .badge{font-weight:600;border-radius:5px;padding:1px 7px;font-size:.74rem;color:#fff}
-  .b-article{background:var(--art)} .b-review{background:var(--rev)} .b-guideline{background:var(--gl)}
+  .badge{font-weight:600;border-radius:5px;padding:1px 7px;font-size:.74rem;border:1.5px solid transparent}
+  .b-article{background:transparent;color:var(--c1);border-color:var(--c1)}
+  .b-review{background:var(--c1);color:var(--on)}
+  .b-guideline{background:var(--c2);color:var(--on)}
   .tag{border:1px solid var(--line);border-radius:5px;padding:0 6px;font-size:.72rem}
   .card h3{font-size:1rem;margin:0 0 4px;line-height:1.4}
-  .card h3 a{color:var(--ink);text-decoration:none} .card h3 a:hover{color:var(--accent);text-decoration:underline}
+  .card h3 a{color:var(--ink);text-decoration:none} .card h3 a:hover{color:var(--c2);text-decoration:underline}
   .authors{font-size:.84rem;color:var(--muted)}
   .links{margin-top:8px;display:flex;gap:12px;font-size:.84rem;flex-wrap:wrap}
-  .links a{color:var(--accent);text-decoration:none} .links a:hover{text-decoration:underline}
-  details summary{cursor:pointer;color:var(--accent);font-size:.84rem;margin-top:6px}
+  .links a{color:var(--c1);text-decoration:none;font-weight:500} .links a:hover{color:var(--c2);text-decoration:underline}
+  details summary{cursor:pointer;color:var(--c2);font-size:.84rem;margin-top:6px;font-weight:500}
   details p{font-size:.88rem;white-space:pre-line;margin:6px 0 0}
   .empty{text-align:center;color:var(--muted);padding:50px 10px}
   .pager{display:flex;justify-content:center;gap:8px;margin-top:10px}
-  mark{background:#ffe58a;color:inherit;border-radius:2px}
-  .stamp{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-  .stamp span{background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:3px 12px;font-size:.84rem;font-weight:600}
-  .stamp span.next{background:var(--bg);color:var(--muted);font-weight:500}
-  footer{color:var(--muted);font-size:.78rem;text-align:center;padding:0 16px 30px}
+  mark{background:var(--c2-soft);color:inherit;border-bottom:2px solid var(--c2);border-radius:2px}
+  .stamp{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .stamp span{background:var(--c2);color:var(--on);border-radius:999px;padding:3px 12px;font-size:.84rem;font-weight:600}
+  .stamp span.next{background:rgba(255,255,255,.14);color:#fff;font-weight:500}
+  footer{color:var(--muted);font-size:.78rem;text-align:center;padding:16px 16px 30px;border-top:3px solid var(--c1);max-width:1180px;margin:0 auto}
 </style>
 </head>
 <body>
 <header>
   <div class="wrap">
-    <h1>麻醉次專科文獻週報</h1>
+    <h1>麻醉次專科<span class="hl">文獻週報</span></h1>
     <div class="sub">Anesthesiology Subspecialties · 最新期刊論文 / 綜述 / 指引 · 每週一自動更新（資料來源：PubMed）</div>
     <div class="sub">製作者：JH CHIU MD × Claude Opus 5.5</div>
     <div class="stamp" id="updated"></div>
@@ -200,7 +212,7 @@ function renderList(){
   }
   $("list").innerHTML = slice.map(a => {
     const au = a.authors.length > 6 ? a.authors.slice(0,6).join(", ") + ", et al." : a.authors.join(", ");
-    return `<article class="card">
+    return `<article class="card t-${a.type}">
       <div class="meta">
         <span class="badge b-${a.type}">${tyName[a.type]}</span>
         <span>${esc(a.journal)}</span><span>·</span><span>${esc(a.pubdate)}</span>
