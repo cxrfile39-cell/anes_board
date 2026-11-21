@@ -73,16 +73,62 @@
   .stamp{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
   .stamp span{background:var(--c2);color:var(--on);border-radius:999px;padding:3px 12px;font-size:.84rem;font-weight:600}
   .stamp span.next{background:rgba(255,255,255,.14);color:#fff;font-weight:500}
+  /* ===== 麻醉元素 ===== */
+  header{position:relative;overflow:hidden;padding-bottom:92px}
+  .head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;position:relative;z-index:1}
+  h1 .logo{display:inline-block;width:1.25em;height:1.25em;vertical-align:-.22em;margin-right:.35em}
+  .monitor{background:#061f26;border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:8px 10px;
+    display:grid;grid-template-columns:repeat(3,auto);gap:4px 14px;box-shadow:inset 0 0 18px rgba(0,0,0,.45);
+    font-family:"SF Mono",Menlo,Consolas,"Roboto Mono",monospace}
+  .monitor .cell{min-width:74px}
+  .monitor .lbl{font-size:.66rem;letter-spacing:.06em;opacity:.85;display:flex;justify-content:space-between;gap:6px}
+  .monitor .val{font-size:1.7rem;font-weight:700;line-height:1.05;font-variant-numeric:tabular-nums}
+  .monitor .unit{font-size:.62rem;opacity:.7}
+  .m-art{color:#7fdbe8} .m-rev{color:#ffffff} .m-gl{color:#ff9d57}
+  .monitor .bar{grid-column:1/-1;font-size:.62rem;color:#8fb3ba;letter-spacing:.05em;border-top:1px dashed rgba(255,255,255,.15);padding-top:4px;display:flex;justify-content:space-between}
+  .blink{animation:blink 1.2s steps(1) infinite} @keyframes blink{50%{opacity:0}}
+  .waves{position:absolute;left:0;right:0;bottom:6px;height:80px;pointer-events:none}
+  .waves .lab{position:absolute;left:16px;font:600 .62rem/1 "SF Mono",Menlo,Consolas,monospace;letter-spacing:.08em}
+  .waves svg{position:absolute;left:0;width:2400px;height:100%;animation:sweep 9s linear infinite}
+  .waves path{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+  @keyframes sweep{from{transform:translateX(0)}to{transform:translateX(-1200px)}}
+  @media (prefers-reduced-motion:reduce){.waves svg,.blink{animation:none}}
+  .ic{display:inline-block;width:1.35em;text-align:center;margin-right:2px}
+  .tag .ic{width:auto;margin-right:3px}
+  .loading{text-align:center;color:var(--muted);padding:50px 10px}
+  .loading .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c2);margin:0 3px;animation:breath 1.4s ease-in-out infinite}
+  .loading .dot:nth-child(2){animation-delay:.2s}.loading .dot:nth-child(3){animation-delay:.4s}
+  @keyframes breath{0%,100%{transform:scale(.6);opacity:.4}50%{transform:scale(1);opacity:1}}
+  footer .fico{width:90px;height:22px;display:block;margin:0 auto 6px}
   footer{color:var(--muted);font-size:.78rem;text-align:center;padding:16px 16px 30px;border-top:3px solid var(--c1);max-width:1180px;margin:0 auto}
 </style>
 </head>
 <body>
 <header>
-  <div class="wrap">
-    <h1>麻醉次專科<span class="hl">文獻週報</span></h1>
-    <div class="sub">Anesthesiology Subspecialties · 最新期刊論文 / 綜述 / 指引 · 每週一自動更新（資料來源：PubMed）</div>
-    <div class="sub">製作者：JH CHIU MD × Claude Opus 5.5</div>
-    <div class="stamp" id="updated"></div>
+  <div class="wrap head-row">
+    <div>
+      <h1><svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+          <!-- 麻醉面罩（正面）：氣墊罩體＋中央接頭 -->
+          <path d="M16 3.5C13 3.5 5 18 5 23.5c0 3 3 5 11 5s11-2 11-5C27 18 19 3.5 16 3.5z" fill="rgba(255,255,255,.14)" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="16" cy="19" r="5.2" fill="#0d5c6e" stroke="#e8792e" stroke-width="2.2"/>
+          <circle cx="16" cy="19" r="2" fill="#e8792e"/>
+        </svg>麻醉次專科<span class="hl">文獻週報</span></h1>
+      <div class="sub">Anesthesiology Subspecialties · 最新期刊論文 / 綜述 / 指引 · 每週一自動更新（資料來源：PubMed）</div>
+      <div class="sub">製作者：JH CHIU MD × Claude Opus 5.5</div>
+      <div class="stamp" id="updated"></div>
+    </div>
+    <div class="monitor" aria-label="本週文獻統計">
+      <div class="cell m-art"><div class="lbl"><span>ART</span><span class="unit">篇</span></div><div class="val" id="mArt">--</div><div class="unit">本週文獻</div></div>
+      <div class="cell m-rev"><div class="lbl"><span>REV</span><span class="unit">篇</span></div><div class="val" id="mRev">--</div><div class="unit">綜述/統合</div></div>
+      <div class="cell m-gl"><div class="lbl"><span>GL</span><span class="unit">篇</span></div><div class="val" id="mGl">--</div><div class="unit">指引/共識</div></div>
+      <div class="bar"><span><span class="blink">●</span> MONITORING PubMed</span><span id="mWeek"></span></div>
+    </div>
+  </div>
+  <div class="waves" aria-hidden="true">
+    <span class="lab" style="top:2px;color:#7fdbe8">II · ECG</span>
+    <svg viewBox="0 0 2400 40" preserveAspectRatio="none" style="top:10px;height:32px"><path id="ecg" stroke="#7fdbe8" opacity=".85"/></svg>
+    <span class="lab" style="top:44px;color:#ff9d57">EtCO₂</span>
+    <svg viewBox="0 0 2400 30" preserveAspectRatio="none" style="top:52px;height:26px;animation-duration:13s"><path id="co2" stroke="#ff9d57" opacity=".9"/></svg>
   </div>
 </header>
 
@@ -130,6 +176,7 @@
 </main>
 
 <footer>
+  <svg class="fico" viewBox="0 0 90 22" aria-hidden="true"><path d="M0 19H12L16 6Q32 4 44 3L48 19H58L62 6Q74 4 84 3L88 19" fill="none" stroke="var(--c2)" stroke-width="2" stroke-linejoin="round"/></svg>
   製作者：JH CHIU MD × Claude Opus 5.5<br>
   資料由 NCBI PubMed E-utilities 自動擷取，分類依關鍵字與期刊檢索式，僅供參考。
 </footer>
@@ -141,6 +188,32 @@ const TYPES = [
   {id:"guideline",zh:"指引 / 共識", en:"Guideline · Consensus"},
 ];
 const PAGE = 50;
+// 次專科圖示
+const ICON = {general:"😴", cardiothoracic:"🫀", neuro:"🧠", pediatric:"👶", obstetric:"🤰", regional:"💉",
+  pain:"⚡", critical:"🫁", transplant:"🔄", ambulatory:"🚶", trauma:"🚑", geriatric:"👴"};
+const ic = id => ICON[id] ? `<span class="ic" aria-hidden="true">${ICON[id]}</span>` : "";
+
+// 生理監視器波形（ECG 與二氧化碳描記圖），重複繪製供捲動
+(function drawWaves(){
+  let ecg = "M0 22", co2 = "M0 26";
+  for(let x=0; x<2400; x+=120){            // 每 120 單位一個心跳
+    ecg += ` L${x+40} 22 Q${x+46} 17 ${x+52} 22 L${x+60} 22 L${x+63} 26 L${x+67} 3 L${x+71} 34 L${x+74} 22 L${x+86} 22 Q${x+96} 13 ${x+106} 22 L${x+120} 22`;
+  }
+  for(let x=0; x<2400; x+=300){            // 每 300 單位一次呼吸：phase I→II→III 平台→吸氣下降
+    co2 += ` L${x+80} 26 C${x+86} 26 ${x+88} 8 ${x+98} 7 L${x+200} 4 C${x+206} 4 ${x+208} 26 ${x+216} 26 L${x+300} 26`;
+  }
+  document.getElementById("ecg").setAttribute("d", ecg);
+  document.getElementById("co2").setAttribute("d", co2);
+})();
+
+function renderMonitor(){
+  const a = state.weekData?.articles || [];
+  const n = t => a.filter(x=>x.type===t).length;
+  $("mArt").textContent = state.weekData ? a.length : "--";
+  $("mRev").textContent = state.weekData ? n("review") : "--";
+  $("mGl").textContent  = state.weekData ? n("guideline") : "--";
+  $("mWeek").textContent = state.weekData ? `${state.weekData.from.slice(5)}~${state.weekData.to.slice(5)}` : "";
+}
 const state = {sp:[], weekData:null, page:1, selSp:new Set(), selTy:new Set(TYPES.map(t=>t.id))};
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -165,7 +238,7 @@ function renderChecks(){
   }
   $("spList").innerHTML = state.sp.map(s => `
     <label class="opt"><input type="checkbox" data-sp="${s.id}" ${state.selSp.has(s.id)?"checked":""}>
-      <span class="name">${esc(s.zh)}<span class="en">${esc(s.en)}</span></span>
+      ${ic(s.id)}<span class="name">${esc(s.zh)}<span class="en">${esc(s.en)}</span></span>
       <span class="cnt">${spCount[s.id]||0}</span></label>`).join("");
   $("tyList").innerHTML = TYPES.map(t => `
     <label class="opt"><input type="checkbox" data-ty="${t.id}" ${state.selTy.has(t.id)?"checked":""}>
@@ -216,7 +289,7 @@ function renderList(){
       <div class="meta">
         <span class="badge b-${a.type}">${tyName[a.type]}</span>
         <span>${esc(a.journal)}</span><span>·</span><span>${esc(a.pubdate)}</span>
-        ${a.categories.map(c=>`<span class="tag">${esc(spName[c]||c)}</span>`).join("")}
+        ${a.categories.map(c=>`<span class="tag">${ic(c)}${esc(spName[c]||c)}</span>`).join("")}
       </div>
       <h3><a href="https://pubmed.ncbi.nlm.nih.gov/${a.pmid}/" target="_blank" rel="noopener">${highlight(a.title, q)}</a></h3>
       <div class="authors">${highlight(au, q)}</div>
@@ -234,10 +307,11 @@ function renderList(){
     <button ${state.page>=pages?"disabled":""} data-pg="${state.page+1}">下一頁</button>` : "";
 }
 
-function render(){ renderChecks(); renderList(); }
+function render(){ renderChecks(); renderList(); renderMonitor(); }
 
 async function loadWeek(week){
   if(!week){ state.weekData = null; render(); return; }
+  $("list").innerHTML = `<div class="loading"><span class="dot"></span><span class="dot"></span><span class="dot"></span><br>誘導中… 資料載入中</div>`;
   const r = await fetch(`data/weeks/${week}.json`, {cache:"no-cache"});
   state.weekData = await r.json();
   state.page = 1;
