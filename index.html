@@ -58,6 +58,9 @@
   .empty{text-align:center;color:var(--muted);padding:50px 10px}
   .pager{display:flex;justify-content:center;gap:8px;margin-top:10px}
   mark{background:#ffe58a;color:inherit;border-radius:2px}
+  .stamp{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .stamp span{background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:3px 12px;font-size:.84rem;font-weight:600}
+  .stamp span.next{background:var(--bg);color:var(--muted);font-weight:500}
   footer{color:var(--muted);font-size:.78rem;text-align:center;padding:0 16px 30px}
 </style>
 </head>
@@ -67,7 +70,7 @@
     <h1>麻醉次專科文獻週報</h1>
     <div class="sub">Anesthesiology Subspecialties · 最新期刊論文 / 綜述 / 指引 · 每週一自動更新（資料來源：PubMed）</div>
     <div class="sub">製作者：JH CHIU MD × Claude Opus 5.5</div>
-    <div class="sub" id="updated"></div>
+    <div class="stamp" id="updated"></div>
   </div>
 </header>
 
@@ -229,6 +232,27 @@ async function loadWeek(week){
   render();
 }
 
+const WD = "日一二三四五六";
+// 一律以台北時間顯示（不受觀看者所在時區影響）
+function tpeParts(d){
+  const t = new Date(d.getTime() + 8*3600e3);
+  return {y:t.getUTCFullYear(), m:t.getUTCMonth()+1, d:t.getUTCDate(), w:t.getUTCDay(), h:t.getUTCHours(), mi:t.getUTCMinutes()};
+}
+const p2 = n => String(n).padStart(2,"0");
+function fmtTime(iso){
+  const p = tpeParts(new Date(iso));
+  return `${p.y}/${p2(p.m)}/${p2(p.d)}（${WD[p.w]}）${p2(p.h)}:${p2(p.mi)}`;
+}
+function nextMonday(){
+  // 排程：每週一 00:00 UTC = 台北 08:00
+  const now = new Date();
+  const n = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  do { n.setUTCDate(n.getUTCDate()+1); } while(n.getUTCDay() !== 1);
+  if(now.getUTCDay() === 1 && now.getUTCHours() < 1) n.setUTCDate(n.getUTCDate()-7);
+  const p = tpeParts(n);
+  return `${p.y}/${p2(p.m)}/${p2(p.d)}（一）08:00 左右`;
+}
+
 async function init(){
   let idx;
   try{
@@ -238,7 +262,9 @@ async function init(){
   }
   state.sp = idx.subspecialties;
   if(!restore()) state.selSp = new Set(state.sp.map(s=>s.id));
-  $("updated").textContent = idx.updated ? `最後更新：${idx.updated.replace("T"," ").slice(0,16)}（台北時間）` : "";
+  $("updated").innerHTML = idx.updated
+    ? `<span>🕒 上次更新：${fmtTime(idx.updated)}</span><span class="next">下次更新：${nextMonday()}</span>`
+    : `<span class="next">尚未更新</span>`;
   $("week").innerHTML = idx.weeks.map((w,i) =>
     `<option value="${w.week}">${w.from} – ${w.to}（${w.total} 篇）${i===0?"・最新":""}</option>`).join("");
   await loadWeek(idx.weeks[0]?.week);
