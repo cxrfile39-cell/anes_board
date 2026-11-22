@@ -124,6 +124,27 @@
   .loading .dot:nth-child(2){animation-delay:.2s}.loading .dot:nth-child(3){animation-delay:.4s}
   @keyframes breath{0%,100%{transform:scale(.6);opacity:.4}50%{transform:scale(1);opacity:1}}
   footer .fico{width:90px;height:22px;display:block;margin:0 auto 6px}
+  a.hlink{color:#ffd0a8;text-decoration:none;border-bottom:1px dashed #ffd0a8}
+  .method{padding:8px 16px 30px}
+  .method h2{font-size:1.15rem;color:var(--c1);border-bottom:3px solid var(--c2);padding-bottom:8px;margin:10px 0 16px}
+  .method h3{font-size:.95rem;color:var(--c1);margin:0 0 8px}
+  .method > h3{margin:20px 0 10px}
+  .m-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .m-box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--c1);border-radius:10px;padding:12px 14px;font-size:.86rem}
+  .m-box ul{margin:0;padding-left:1.15em} .m-box li{margin:3px 0} .m-box p{margin:0}
+  .m-note{border-left-color:var(--c2);margin-top:16px} .m-note h3{color:var(--c2)}
+  .m-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+  .m-table{width:100%;border-collapse:collapse;font-size:.85rem}
+  .m-table th{background:var(--c1);color:var(--on);text-align:left;padding:8px 12px;font-weight:600}
+  .m-table td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top}
+  .m-table td:first-child{white-space:nowrap;font-weight:600;color:var(--c1)}
+  .m-table tr:nth-child(even) td{background:var(--c1-soft)}
+  .m-raw{margin-top:12px;font-size:.84rem}
+  .m-raw summary{cursor:pointer;color:var(--c2);font-weight:600}
+  .m-raw .q{margin:8px 0}
+  .m-raw .q b{color:var(--c1)}
+  .m-raw code{display:block;white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);
+    border-radius:8px;padding:8px 10px;margin-top:4px;font:12px/1.5 "SF Mono",Menlo,Consolas,monospace;color:var(--ink)}
   footer{color:var(--muted);font-size:.78rem;text-align:center;padding:16px 16px 30px;border-top:3px solid var(--c1);max-width:1180px;margin:0 auto}
   /* 手機：篩選清單改兩欄精簡版（放最後以覆蓋前面規則） */
   @media (max-width:860px){
@@ -147,7 +168,7 @@
           <circle cx="16" cy="19" r="2" fill="#e8792e"/>
         </svg>麻醉次專科<span class="hl">文獻週報</span></h1>
       <div class="sub">Anesthesiology Subspecialties · 最新期刊論文 / 綜述 / 指引 · 每週一自動更新（資料來源：PubMed）</div>
-      <div class="sub">製作者：JH CHIU MD × Claude Opus 5.5</div>
+      <div class="sub">製作者：JH CHIU MD × Claude Opus 5.5　·　<a class="hlink" href="#method">搜尋邏輯說明 ↓</a></div>
       <div class="stamp" id="updated"></div>
     </div>
     <div class="monitor" aria-label="本週文獻統計">
@@ -208,6 +229,79 @@
     <div class="pager" id="pager"></div>
   </section>
 </main>
+
+<section class="method wrap" id="method">
+  <h2>📝 搜尋邏輯說明 Search Methodology</h2>
+
+  <div class="m-grid">
+    <div class="m-box">
+      <h3>① 資料來源與時間範圍</h3>
+      <ul>
+        <li>資料來源：美國國家醫學圖書館 <b>PubMed</b>（NCBI E-utilities API）。</li>
+        <li>每週一台北時間 08:00 左右自動執行，抓取<b>前 7 天（上週一至週日）新收錄進 PubMed</b> 的文章。</li>
+        <li>依 PubMed「收錄日 Entrez date」計算，因此包含線上搶先刊登（Epub ahead of print）的文章；收錄日與期刊出版日可能不同。</li>
+      </ul>
+    </div>
+    <div class="m-box">
+      <h3>② 共同篩選條件</h3>
+      <ul>
+        <li><b>收錄類型：</b>Journal Article、Review、Systematic Review、Meta-Analysis、Guideline、Practice Guideline。</li>
+        <li><b>排除類型：</b>Comment、Editorial、Letter、Published Erratum、Retraction、News、Case Reports。</li>
+        <li><b>語言：</b><span id="mLang">英文</span>。</li>
+        <li>每個次專科每週最多收 <b id="mMax">300</b> 篇（依出版日期取最新）；網站保留最近 <b id="mKeep">26</b> 週。</li>
+      </ul>
+    </div>
+    <div class="m-box">
+      <h3>③ 文章類型分類（四區塊）</h3>
+      <ul>
+        <li>依 PubMed 的 Publication Type 判定，同時符合多類時優先序為：<b>指引 ＞ 統合分析 ＞ 綜述 ＞ 原始研究</b>。</li>
+        <li>📋 <b>共識／指引</b>：Guideline、Practice Guideline、Consensus Development Conference</li>
+        <li>📊 <b>統合分析</b>：Meta-Analysis、Systematic Review</li>
+        <li>📚 <b>綜述</b>：Review、Scoping Review</li>
+        <li>🔬 <b>原始研究</b>：其餘期刊論文（RCT、世代研究、基礎研究等）</li>
+      </ul>
+    </div>
+    <div class="m-box">
+      <h3>④ 「麻醉相關」的定義</h3>
+      <p>下表中的「麻醉」指符合以下任一條件：MeSH 主題詞 <i>Anesthesia</i>、<i>Anesthesiology</i>、<i>Anesthetics</i>，或標題／摘要含 <i>anesthe*</i>、<i>anaesthe*</i>、<i>perioperative</i>。</p>
+    </div>
+  </div>
+
+  <h3>⑤ 各次專科檢索條件</h3>
+  <div class="m-table-wrap">
+  <table class="m-table">
+    <thead><tr><th>次專科</th><th>收錄條件（符合任一即可）</th></tr></thead>
+    <tbody>
+      <tr><td>😴 一般麻醉</td><td>麻醉核心期刊的所有文章：Anesthesiology、Br J Anaesth、Anesth Analg、Anaesthesia、Eur J Anaesthesiol、Can J Anaesth、J Clin Anesth、Acta Anaesthesiol Scand、Korean J Anesthesiol、Minerva Anestesiol、BMC Anesthesiol、J Anesth、Curr Opin Anaesthesiol、Anaesth Crit Care Pain Med、Perioper Med、BJA Open</td></tr>
+      <tr><td>🫀 心胸麻醉</td><td>J Cardiothorac Vasc Anesth；或 麻醉 ＋ 心臟／胸腔手術、體外循環、單肺通氣、TAVI/TAVR</td></tr>
+      <tr><td>🧠 神經麻醉</td><td>J Neurosurg Anesthesiol；或 麻醉 ＋ 神經外科／開顱手術、腦損傷、術後譫妄、術後認知功能障礙</td></tr>
+      <tr><td>👶 小兒麻醉</td><td>Paediatr Anaesth；或 麻醉 ＋ 兒童、嬰兒、新生兒</td></tr>
+      <tr><td>🤰 產科麻醉</td><td>Int J Obstet Anesth；或 MeSH 產科麻醉／產科鎮痛；或 麻醉 ＋ 懷孕、剖腹產、產婦、分娩鎮痛</td></tr>
+      <tr><td>💉 區域麻醉</td><td>Reg Anesth Pain Med；或 神經阻斷、筋膜平面阻斷（plane block）、傳導麻醉、脊髓麻醉、硬膜外麻醉／鎮痛</td></tr>
+      <tr><td>⚡ 疼痛醫學</td><td>疼痛專科期刊：Pain Med、Pain、J Pain、Eur J Pain、Pain Physician、Clin J Pain、Pain Ther、Pain Pract；或 術後疼痛／慢性疼痛／疼痛處置 ＋（麻醉 或 介入治療、射頻燒灼、脊髓刺激）</td></tr>
+      <tr><td>🫁 重症醫學</td><td>重症專科期刊：Crit Care Med、Intensive Care Med、Crit Care、Am J Respir Crit Care Med、Ann Intensive Care、J Crit Care、J Intensive Care、Crit Care Explor、Crit Care Resusc、Anaesth Crit Care Pain Med</td></tr>
+      <tr><td>🔄 移植麻醉</td><td>麻醉 ＋ 器官移植（肝、腎、肺、心臟移植）</td></tr>
+      <tr><td>🚶 門診麻醉</td><td>麻醉 ＋ 門診／日間手術、當日出院、診所手術、深度鎮靜、程序鎮靜、內視鏡</td></tr>
+      <tr><td>🚑 創傷麻醉</td><td>麻醉 ＋ 創傷、出血性休克、大量輸血、髖部骨折、燒傷</td></tr>
+      <tr><td>👴 老年麻醉</td><td>麻醉 ＋ 80 歲以上、衰弱（frailty）、老年／高齡病人</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <details class="m-raw">
+    <summary>查看完整 PubMed 檢索式（Search strings）</summary>
+    <div id="mRaw">載入中…</div>
+  </details>
+
+  <div class="m-box m-note">
+    <h3>⑥ 使用限制</h3>
+    <ul>
+      <li>分類以期刊名稱與關鍵字自動判定，可能有誤收或漏收；同一篇文章可能同時出現在多個次專科。</li>
+      <li>新收錄的文章通常尚未完成 MeSH 標引，初期主要依標題與摘要比對。</li>
+      <li>本站僅為文獻快訊整理，內容請以原始文獻為準，不構成臨床建議。</li>
+    </ul>
+  </div>
+</section>
 
 <footer>
   <svg class="fico" viewBox="0 0 90 22" aria-hidden="true"><path d="M0 19H12L16 6Q32 4 44 3L48 19H58L62 6Q74 4 84 3L88 19" fill="none" stroke="var(--c2)" stroke-width="2" stroke-linejoin="round"/></svg>
@@ -409,6 +503,23 @@ function nextMonday(){
   return `${p.y}/${p2(p.m)}/${p2(p.d)}（一）08:00 左右`;
 }
 
+// 讀取 subspecialties.json，顯示實際使用的參數與完整檢索式（與設定檔永遠同步）
+async function loadMethod(){
+  try{
+    const cfg = await (await fetch("subspecialties.json", {cache:"no-cache"})).json();
+    $("mMax").textContent = cfg.max_per_category ?? 300;
+    $("mKeep").textContent = cfg.keep_weeks ?? 26;
+    $("mLang").textContent = cfg.language_filter ? (/english/i.test(cfg.language_filter) ? "英文（english[la]）" : cfg.language_filter) : "不限";
+    const common = `(${cfg.pubtype_filter})` + (cfg.language_filter ? ` AND ${cfg.language_filter}` : "");
+    $("mRaw").innerHTML =
+      `<div class="q"><b>每個次專科的檢索式都會再加上：</b><code>AND ${esc(common)}</code></div>` +
+      `<div class="q"><b>{ANES}（麻醉相關定義）＝</b><code>${esc(cfg.anes_terms)}</code></div>` +
+      cfg.subspecialties.map(sp => `<div class="q"><b>${ICON[sp.id]||""} ${esc(sp.zh)} ${esc(sp.en)}</b><code>${esc(sp.query)}</code></div>`).join("");
+  }catch(e){
+    $("mRaw").textContent = "無法載入 subspecialties.json";
+  }
+}
+
 async function init(){
   let idx;
   try{
@@ -423,6 +534,7 @@ async function init(){
     : `<span class="next">尚未更新</span>`;
   $("week").innerHTML = idx.weeks.map((w,i) =>
     `<option value="${w.week}">${w.from} – ${w.to}（${w.total} 篇）${i===0?"・最新":""}</option>`).join("");
+  loadMethod();
   await loadWeek(idx.weeks[0]?.week);
 }
 
