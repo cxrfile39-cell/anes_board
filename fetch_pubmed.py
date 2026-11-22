@@ -29,7 +29,8 @@ DELAY = 0.12 if API_KEY else 0.4
 
 GUIDELINE_TYPES = {"Guideline", "Practice Guideline", "Consensus Development Conference",
                    "Consensus Development Conference, NIH"}
-REVIEW_TYPES = {"Review", "Systematic Review", "Meta-Analysis", "Scoping Review"}
+META_TYPES = {"Meta-Analysis", "Systematic Review"}
+REVIEW_TYPES = {"Review", "Scoping Review"}
 MONTHS = {m: i for i, m in enumerate(
     ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], 1)}
 
@@ -104,9 +105,11 @@ def classify(pubtypes):
     s = set(pubtypes)
     if s & GUIDELINE_TYPES:
         return "guideline"
+    if s & META_TYPES:
+        return "meta"
     if s & REVIEW_TYPES:
         return "review"
-    return "article"
+    return "original"
 
 
 def parse_articles(xml_bytes):
