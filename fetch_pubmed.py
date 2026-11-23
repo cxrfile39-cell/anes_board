@@ -274,6 +274,26 @@ def main():
             enrich_all_weeks()
             print("已更新既有資料的 IF")
         return
+    if "--auto" in sys.argv:
+        # 自動補齊：若「最近一個已結束的週（到上週日）」還沒抓，就抓；否則只更新 IF。
+        # 排程延遲、被取消或失敗時，下一次任何執行都會自動補上。
+        today = datetime.now(timezone(timedelta(hours=8))).date()
+        expected_end = today - timedelta(days=today.weekday() + 1)   # 最近的週日
+        ends = []
+        for f in WEEKS.glob("*.json") if WEEKS.exists() else []:
+            try:
+                ends.append(date.fromisoformat(f.stem))
+            except ValueError:
+                pass
+        latest = max(ends) if ends else None
+        if latest and latest >= expected_end:
+            print(f"本週資料已存在（至 {latest}），只更新 IF")
+            enrich_all_weeks()
+            return
+        gap = (expected_end - latest).days if latest else 28
+        os.environ["END_DATE"] = expected_end.isoformat()
+        os.environ["DAYS"] = str(min(28, max(7, gap)))
+        print(f"缺少至 {expected_end} 的資料，開始抓取（{os.environ['DAYS']} 天）")
     cfg = json.loads(CONFIG.read_text(encoding="utf-8"))
     days = int(os.environ.get("DAYS") or 7)
     tpe = timezone(timedelta(hours=8))
@@ -340,5 +360,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
