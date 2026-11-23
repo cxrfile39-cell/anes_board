@@ -148,6 +148,24 @@
   .m-raw .q b{color:var(--c1)}
   .m-raw code{display:block;white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);
     border-radius:8px;padding:8px 10px;margin-top:4px;font:12px/1.5 "SF Mono",Menlo,Consolas,monospace;color:var(--ink)}
+  .seg{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1.5px solid var(--c1);border-radius:9px;overflow:hidden;margin-bottom:10px}
+  .seg button{border:0;border-radius:0;background:var(--card);color:var(--c1);font-weight:600;padding:7px 0;font-size:.88rem}
+  .seg button+button{border-left:1px solid var(--c1)}
+  .seg button.on{background:var(--c1);color:var(--on)}
+  .seg button:not(.on):hover{background:var(--c1-soft);color:var(--c1)}
+  .hint{font-size:.78rem;color:var(--muted);margin-bottom:6px;line-height:1.45}
+  #liveBox{margin:0}
+  button.go{background:var(--c2);border-color:var(--c2);color:var(--on);font-weight:600;padding:7px 14px;font-size:.88rem}
+  button.go:hover{color:var(--on);filter:brightness(1.08)}
+  .live-note{background:var(--c2-soft);border:1px solid var(--c2);color:var(--ink);border-radius:10px;padding:8px 12px;font-size:.84rem;margin-bottom:12px}
+  .live-note a{color:var(--c2);font-weight:600}
+  .sec-load{text-align:center;color:var(--muted);font-size:.85rem;padding:16px 0}
+  .sec-load .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c2);margin:0 2px;animation:breath 1.4s ease-in-out infinite}
+  .sec-load .dot:nth-child(2){animation-delay:.2s}.sec-load .dot:nth-child(3){animation-delay:.4s}
+  .sec-err{color:var(--c2);font-size:.85rem;text-align:center;padding:12px 0}
+  a.pm-all{font-size:.82rem;color:var(--c1);align-self:center;text-decoration:none;font-weight:600}
+  a.pm-all:hover{color:var(--c2);text-decoration:underline}
+  .tagwait{font-size:.72rem;color:var(--muted)}
   footer{color:var(--muted);font-size:.78rem;text-align:center;padding:16px 16px 30px;border-top:3px solid var(--c1);max-width:1180px;margin:0 auto}
   /* 手機：篩選清單改兩欄精簡版（放最後以覆蓋前面規則） */
   @media (max-width:860px){
@@ -193,8 +211,18 @@
 <main class="wrap">
   <aside>
     <div class="panel">
-      <h2>週次</h2>
-      <select id="week"></select>
+      <h2>搜尋區間</h2>
+      <div class="seg" id="range">
+        <button type="button" data-range="7" class="on">7 天</button>
+        <button type="button" data-range="30">30 天</button>
+        <button type="button" data-range="365">1 年</button>
+        <button type="button" data-range="730">2 年</button>
+      </div>
+      <div id="weekBox">
+        <div class="hint">7 天＝每週自動整理的資料，可切換歷史週次：</div>
+        <select id="week"></select>
+      </div>
+      <div id="liveBox" class="hint" hidden>即時向 PubMed 搜尋最近 <b id="rangeTxt"></b> 收錄的文獻（使用相同檢索式），可再輸入關鍵字縮小範圍。</div>
     </div>
 
     <div class="panel">
@@ -220,12 +248,14 @@
 
   <section>
     <div class="toolbar">
-      <input type="search" id="q" placeholder="搜尋標題、摘要、作者、期刊…">
+      <input type="search" id="q" placeholder="搜尋標題、摘要、作者、期刊…" enterkeyhint="search">
+      <button type="button" id="qBtn" class="go" hidden>🔍 搜尋</button>
       <select id="sort">
         <option value="entrez">依 PubMed 收錄日</option>
         <option value="pub">依出版日期</option>
         <option value="if">依 IF 高→低</option>
         <option value="journal">依期刊名稱</option>
+        <option value="relevance" id="optRel" hidden>依相關性</option>
       </select>
     </div>
     <div class="summary" id="summary"></div>
@@ -244,6 +274,7 @@
         <li>資料來源：美國國家醫學圖書館 <b>PubMed</b>（NCBI E-utilities API）。</li>
         <li>每週一台北時間 07:30 左右自動執行（11:20 另有備援；排程若延遲或失敗，下一次執行會自動補齊），抓取<b>前 7 天（上週一至週日）新收錄進 PubMed</b> 的文章。</li>
         <li>依 PubMed「收錄日 Entrez date」計算，因此包含線上搶先刊登（Epub ahead of print）的文章；收錄日與期刊出版日可能不同。</li>
+        <li><b>搜尋區間：</b>「7 天」顯示每週自動整理的資料；選「30 天／1 年／2 年」時，網頁會用同一套檢索式<b>即時向 PubMed 搜尋</b>，各區塊數字為 PubMed 實際總篇數，每次載入 20 篇，並可輸入關鍵字縮小範圍。</li>
       </ul>
     </div>
     <div class="m-box">
@@ -358,6 +389,14 @@ const ic = id => ICON[id] ? `<span class="ic" aria-hidden="true">${ICON[id]}</sp
 })();
 
 function renderMonitor(){
+  if(state.mode === "live"){
+    const L = state.live;
+    const n = t => (L && L.total[t] != null) ? fmtNum(L.total[t]) : "--";
+    $("mOri").textContent = n("original"); $("mRev").textContent = n("review");
+    $("mMa").textContent = n("meta");      $("mGl").textContent = n("guideline");
+    $("mWeek").textContent = "近 " + rangeLabel(state.range);
+    return;
+  }
   const a = state.weekData?.articles || [];
   const n = t => state.weekData ? a.filter(x=>x.type===t).length : "--";
   $("mOri").textContent = n("original");
@@ -366,7 +405,8 @@ function renderMonitor(){
   $("mGl").textContent  = n("guideline");
   $("mWeek").textContent = state.weekData ? `${state.weekData.from.slice(5)}~${state.weekData.to.slice(5)}` : "";
 }
-const state = {sp:[], weekData:null, selSp:new Set(), selTy:new Set(TYPES.map(t=>t.id)), open:{}, shown:{}};
+const state = {sp:[], weekData:null, selSp:new Set(), selTy:new Set(TYPES.map(t=>t.id)), open:{}, shown:{},
+  mode:"week", range:7, cfg:null, live:null, metrics:{}, ifOverride:{}, ifLabel:"JCR"};
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
@@ -387,16 +427,19 @@ function restore(){
 }
 
 function renderChecks(){
-  const arts = state.weekData?.articles || [];
+  const live = state.mode === "live";
+  const arts = live ? [] : (state.weekData?.articles || []);
   const spCount = {}, tyCount = {};
   for(const a of arts){
     for(const c of a.categories) spCount[c] = (spCount[c]||0)+1;
     tyCount[a.type] = (tyCount[a.type]||0)+1;
   }
+  if(live && state.live) for(const t of TYPES) if(state.live.total[t.id] != null) tyCount[t.id] = fmtNum(state.live.total[t.id]);
+  if(live) for(const sp of state.sp) spCount[sp.id] = "";
   $("spList").innerHTML = state.sp.map(s => `
     <label class="opt"><input type="checkbox" data-sp="${s.id}" ${state.selSp.has(s.id)?"checked":""}>
       ${ic(s.id)}<span class="name">${esc(s.zh)}<span class="en">${esc(s.en)}</span></span>
-      <span class="cnt">${spCount[s.id]||0}</span></label>`).join("");
+      ${spCount[s.id] === "" ? "" : `<span class="cnt">${spCount[s.id]||0}</span>`}</label>`).join("");
   $("tyList").innerHTML = TYPES.map(t => `
     <label class="opt"><input type="checkbox" data-ty="${t.id}" ${state.selTy.has(t.id)?"checked":""}>
       <span class="ic" aria-hidden="true">${t.icon}</span><span class="name">${t.zh}<span class="en">${t.en}</span></span>
@@ -439,7 +482,7 @@ function cardHTML(a, q, spName, tyName){
     <div class="meta">
       <span class="badge b-${a.type}">${tyName[a.type]}</span>
       <span>${esc(a.journal)}</span>${ifBadge(a)}<span>·</span><span>${esc(a.pubdate)}</span>
-      ${a.categories.map(c=>`<span class="tag">${ic(c)}${esc(spName[c]||c)}</span>`).join("")}
+      ${a.categories ? a.categories.map(c=>`<span class="tag">${ic(c)}${esc(spName[c]||c)}</span>`).join("") : `<span class="tagwait">次專科標記中…</span>`}
     </div>
     <h3><a href="https://pubmed.ncbi.nlm.nih.gov/${a.pmid}/" target="_blank" rel="noopener">${highlight(a.title, q)}</a></h3>
     <div class="authors">${highlight(au, q)}</div>
@@ -492,16 +535,264 @@ function renderList(){
   }).join("");
 }
 
-function render(){ renderChecks(); renderList(); renderMonitor(); }
+/* ======================= 即時 PubMed 搜尋（30 天 / 1 年 / 2 年） ======================= */
+const EU = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
+const LIVE_PAGE = 20;
+const PT_G = '(guideline[pt] OR "practice guideline"[pt] OR "consensus development conference"[pt] OR "consensus development conference, nih"[pt])';
+const PT_M = '("meta-analysis"[pt] OR "systematic review"[pt])';
+const PT_R = '(review[pt] OR "scoping review"[pt])';
+// 與 classify() 相同的優先序，讓四區塊互不重複
+const TYPE_Q = {
+  guideline: ` AND ${PT_G}`,
+  meta:      ` AND ${PT_M} NOT ${PT_G}`,
+  review:    ` AND ${PT_R} NOT ${PT_M} NOT ${PT_G}`,
+  original:  ` NOT ${PT_R} NOT ${PT_M} NOT ${PT_G}`,
+};
+const fmtNum = n => Number(n).toLocaleString("en-US");
+const rangeLabel = d => ({7:"7 天",30:"30 天",365:"1 年",730:"2 年"})[d] || d+" 天";
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+let lastReq = 0;
+async function eu(endpoint, params){
+  // NCBI 規定未使用 API key 時每秒最多 3 次請求
+  for(let attempt=0; attempt<3; attempt++){
+    const wait = Math.max(0, lastReq + 380 - Date.now());
+    lastReq = Date.now() + wait;
+    if(wait) await sleep(wait);
+    const r = await fetch(EU + endpoint, {method:"POST", body:new URLSearchParams({...params, tool:"anesth-digest"})});
+    if(r.ok) return r;
+    if(r.status === 429 || r.status >= 500){ await sleep(1200*(attempt+1)); continue; }
+    throw new Error("PubMed 回應錯誤 " + r.status);
+  }
+  throw new Error("PubMed 忙碌中，請稍後再試");
+}
+function ymd(d){ return `${d.getFullYear()}/${p2(d.getMonth()+1)}/${p2(d.getDate())}`; }
+function liveDates(){
+  const end = new Date(), start = new Date(end.getTime() - (state.range-1)*86400e3);
+  return {min: ymd(start), max: ymd(end)};
+}
+function spQuery(id){
+  const sp = state.cfg.subspecialties.find(x=>x.id===id);
+  return sp ? `(${sp.query.replaceAll("{ANES}", state.cfg.anes_terms)})` : "";
+}
+function baseQuery(){
+  const c = state.cfg;
+  const subs = state.sp.filter(s => state.selSp.has(s.id)).map(s => spQuery(s.id));
+  const kw = $("q").value.trim();
+  return `(${subs.join(" OR ")}) AND (${c.pubtype_filter})` + (c.language_filter ? ` AND ${c.language_filter}` : "") + (kw ? ` AND (${kw})` : "");
+}
+function liveSort(){ return ({journal:"JournalName", relevance:"relevance"})[$("sort").value] || "pub_date"; }
+function pubmedLink(term){
+  const {min,max} = liveDates();
+  return "https://pubmed.ncbi.nlm.nih.gov/?term=" + encodeURIComponent(`(${term}) AND ${min}:${max}[edat]`) + "&sort=date";
+}
+
+function parseXML(txt){
+  const doc = new DOMParser().parseFromString(txt, "text/xml");
+  const T = (el, sel) => (el?.querySelector(sel)?.textContent || "").replace(/\s+/g," ").trim();
+  const M = {Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
+  return [...doc.querySelectorAll("PubmedArticle")].map(pa => {
+    const art = pa.querySelector("MedlineCitation > Article");
+    const abs = [...art.querySelectorAll("Abstract > AbstractText")].map(x => {
+      const t = x.textContent.replace(/\s+/g," ").trim(); const l = x.getAttribute("Label");
+      return t ? (l ? `${l}: ${t}` : t) : "";
+    }).filter(Boolean).join("\n");
+    const authors = [...art.querySelectorAll("AuthorList > Author")].map(au =>
+      T(au,"CollectiveName") || [T(au,"LastName"), T(au,"Initials")].filter(Boolean).join(" ")).filter(Boolean);
+    let pubdate = "", sortdate = "";
+    const ad = art.querySelector("ArticleDate");
+    if(ad && T(ad,"Year")){ pubdate = sortdate = `${T(ad,"Year")}-${p2(+T(ad,"Month")||1)}-${p2(+T(ad,"Day")||1)}`; }
+    else {
+      const pd = art.querySelector("Journal > JournalIssue > PubDate");
+      const y = T(pd,"Year"), mo = T(pd,"Month"), d = T(pd,"Day");
+      if(y){ pubdate = [y,mo,d].filter(Boolean).join(" "); sortdate = `${y}-${p2(M[mo.slice(0,3)]||+mo||1)}-${p2(+d||1)}`; }
+      else pubdate = T(pd,"MedlineDate");
+    }
+    const ent = [...pa.querySelectorAll("PubmedData > History > PubMedPubDate")].find(x => x.getAttribute("PubStatus")==="entrez");
+    const id = type => [...pa.querySelectorAll("PubmedData > ArticleIdList > ArticleId")].find(x => x.getAttribute("IdType")===type)?.textContent || "";
+    const pubtypes = [...art.querySelectorAll("PublicationTypeList > PublicationType")].map(x => x.textContent);
+    const issn = [...new Set([...art.querySelectorAll("Journal > ISSN"), ...pa.querySelectorAll("MedlineJournalInfo > ISSNLinking")].map(x => x.textContent.trim()).filter(Boolean))];
+    const a = {
+      pmid: T(pa,"MedlineCitation > PMID"), title: T(art,"ArticleTitle"), abstract: abs, authors,
+      journal: T(art,"Journal > ISOAbbreviation") || T(art,"Journal > Title"), pubdate, sortdate,
+      entrez: ent ? `${T(ent,"Year")}-${p2(+T(ent,"Month"))}-${p2(+T(ent,"Day"))}` : "",
+      doi: id("doi"), pmc: id("pmc"), pubtypes, issn, type: classify(pubtypes), categories: null,
+    };
+    applyIF(a);
+    return a;
+  });
+}
+
+// IF：與每週資料相同的來源（手動 JCR 優先，其次 OpenAlex 快取）
+function applyIF(a){
+  const keys = [a.journal.toLowerCase(), ...a.issn.map(x=>x.toLowerCase())];
+  const ov = keys.map(k => state.ifOverride[k]).find(v => typeof v === "number");
+  if(ov != null){ a.if = Math.round(ov*10)/10; a.if_src = state.ifLabel; return; }
+  const vals = a.issn.map(x => state.metrics[x]?.if).filter(v => v != null);
+  if(vals.length){ a.if = Math.round(Math.max(...vals)*10)/10; a.if_src = "OA"; }
+}
+async function fetchMissingIF(items){
+  const miss = [...new Set(items.flatMap(a => a.if == null ? a.issn : []))].filter(x => !(x in state.metrics)).slice(0, 50);
+  if(!miss.length) return;
+  try{
+    const url = "https://api.openalex.org/sources?" + new URLSearchParams({filter:"issn:"+miss.join("|"), "per-page":"200", select:"issn,issn_l,summary_stats"});
+    const res = await (await fetch(url)).json();
+    for(const x of miss) state.metrics[x] = state.metrics[x] || {if:null};
+    for(const src of res.results || []){
+      const v = src.summary_stats?.["2yr_mean_citedness"];
+      for(const x of [...(src.issn||[]), src.issn_l]) if(x && miss.includes(x)) state.metrics[x] = {if:v};
+    }
+    items.forEach(a => { if(a.if == null) applyIF(a); });
+  }catch(e){ /* IF 只是加值資訊，失敗就略過 */ }
+}
+
+function liveKey(){ return [state.range, liveSort(), [...state.selSp].sort().join(","), $("q").value.trim()].join("|"); }
+function newLive(){
+  return {key: liveKey(), base: baseQuery(), gen: Math.random(), total:{}, ids:{}, items:{}, loading:{}, err:null};
+}
+async function runLive(){
+  if(!state.cfg){ renderLive(); return; }
+  if(!state.selSp.size){ state.live = null; render(); return; }
+  if(!state.live || state.live.key !== liveKey()){ state.live = newLive(); state.open = {}; }
+  const L = state.live;
+  const need = TYPES.filter(t => state.selTy.has(t.id) && L.total[t.id] == null && !L.loading[t.id]).map(t => t.id);
+  if(!need.length){ render(); return; }
+  need.forEach(t => L.loading[t] = true);
+  render();
+  try{
+    const {min,max} = liveDates();
+    for(const t of need){                                   // 1) 各區塊的總數與前 20 篇 PMID
+      const r = await (await eu("esearch.fcgi", {db:"pubmed", term:L.base + TYPE_Q[t], retmode:"json",
+        retmax:LIVE_PAGE, sort:liveSort(), datetype:"edat", mindate:min, maxdate:max})).json();
+      if(state.live !== L) return;
+      L.total[t] = +r.esearchresult.count; L.ids[t] = r.esearchresult.idlist; L.items[t] = [];
+      renderChecks(); renderMonitor();
+    }
+    const all = need.flatMap(t => L.ids[t]);                // 2) 一次抓回所有文章詳細資料
+    const got = all.length ? parseXML(await (await eu("efetch.fcgi", {db:"pubmed", id:all.join(","), retmode:"xml"})).text()) : [];
+    if(state.live !== L) return;
+    const byId = Object.fromEntries(got.map(a => [a.pmid, a]));
+    for(const t of need){ L.items[t] = L.ids[t].map(id => byId[id]).filter(Boolean); L.loading[t] = false; }
+    render();
+    await enrichLive(L, need.flatMap(t => L.items[t]));     // 3) 背景：次專科標記、IF
+  }catch(e){
+    if(state.live !== L) return;
+    L.err = e.message || String(e); need.forEach(t => L.loading[t] = false);
+    render();
+  }
+}
+async function liveMore(t){
+  const L = state.live; if(!L || L.loading[t]) return;
+  L.loading[t] = true; renderLive();
+  try{
+    const {min,max} = liveDates();
+    const r = await (await eu("esearch.fcgi", {db:"pubmed", term:L.base + TYPE_Q[t], retmode:"json", retstart:L.items[t].length,
+      retmax:LIVE_PAGE, sort:liveSort(), datetype:"edat", mindate:min, maxdate:max})).json();
+    const ids = r.esearchresult.idlist;
+    const got = ids.length ? parseXML(await (await eu("efetch.fcgi", {db:"pubmed", id:ids.join(","), retmode:"xml"})).text()) : [];
+    if(state.live !== L) return;
+    const byId = Object.fromEntries(got.map(a => [a.pmid, a]));
+    const add = ids.map(id => byId[id]).filter(Boolean);
+    L.items[t].push(...add); L.loading[t] = false;
+    renderLive();
+    await enrichLive(L, add);
+  }catch(e){ L.loading[t] = false; L.err = e.message; renderLive(); }
+}
+async function enrichLive(L, items){
+  if(!items.length) return;
+  const sel = state.sp.filter(s => state.selSp.has(s.id)).map(s => s.id);
+  if(sel.length === 1){ items.forEach(a => a.categories = [sel[0]]); }
+  else {
+    items.forEach(a => a.categories = a.categories || []);
+    const ids = items.map(a => a.pmid);
+    const byId = Object.fromEntries(items.map(a => [a.pmid, a]));
+    for(const id of sel){                                   // 逐一比對每個次專科檢索式
+      try{
+        const r = await (await eu("esearch.fcgi", {db:"pubmed", term:`${spQuery(id)} AND (${ids.map(x=>x+"[uid]").join(" OR ")})`,
+          retmode:"json", retmax:ids.length})).json();
+        if(state.live !== L) return;
+        for(const p of r.esearchresult.idlist) byId[p]?.categories.push(id);
+        renderLive();
+      }catch(e){ /* 標記失敗不影響主要結果 */ }
+    }
+  }
+  await fetchMissingIF(items);
+  if(state.live === L) renderLive();
+}
+
+function renderLive(){
+  if(state.mode !== "live") return;          // 已切回 7 天時，背景工作不要覆蓋畫面
+  const q = $("q").value.trim();
+  const L = state.live;
+  const spName = Object.fromEntries(state.sp.map(s=>[s.id,s.zh]));
+  const tyName = Object.fromEntries(TYPES.map(t=>[t.id,t.zh]));
+  const {min,max} = liveDates();
+  $("pager").innerHTML = "";
+  if(!state.cfg){ $("summary").textContent = ""; $("list").innerHTML = `<div class="empty">檢索設定載入中…</div>`; return; }
+  if(!state.selSp.size || !state.selTy.size){
+    $("summary").textContent = "";
+    $("list").innerHTML = `<div class="empty">${!state.selSp.size ? "目前沒有勾選任何次專科。" : "目前沒有勾選任何文章類型。"}</div>`; return;
+  }
+  const tot = TYPES.filter(t => state.selTy.has(t.id) && L?.total[t.id] != null).reduce((s,t)=>s+L.total[t.id],0);
+  $("summary").innerHTML = `PubMed 即時搜尋　${min} – ${max}（收錄日）${q ? `・關鍵字「${esc(q)}」` : ""}　共 <b>${fmtNum(tot)}</b> 篇`;
+  const note = L?.err ? `<div class="live-note">⚠️ 即時搜尋失敗（${esc(L.err)}）。可能是網路或 PubMed 暫時忙碌，請稍後再按一次「搜尋」；或直接 <a href="${pubmedLink(L.base)}" target="_blank" rel="noopener">在 PubMed 網站開啟這個搜尋 ↗</a></div>` : "";
+  const sortIF = $("sort").value === "if";
+  $("list").innerHTML = note + TYPES.filter(t => state.selTy.has(t.id)).map(t => {
+    const total = L?.total[t.id];
+    let items = L?.items[t.id] || [];
+    if(sortIF) items = items.slice().sort((a,b)=>(b.if ?? -1)-(a.if ?? -1));
+    const open = !!state.open[t.id];
+    const vis = open ? items : items.slice(0, PREVIEW);
+    const loading = L?.loading[t.id];
+    const link = L ? `<a class="pm-all" href="${pubmedLink(L.base + TYPE_Q[t.id])}" target="_blank" rel="noopener">在 PubMed 查看全部 ↗</a>` : "";
+    let foot = "";
+    if(!loading && total != null){
+      if(!open && items.length > PREVIEW)       foot = `<button class="more" data-open="${t.id}">展開 ▾（已載入 ${items.length} 篇）</button>`;
+      else if(open && items.length < total)     foot = `<button class="more" data-livemore="${t.id}">再載入 ${Math.min(LIVE_PAGE, total-items.length)} 篇（${items.length} / ${fmtNum(total)}）</button>
+                                                        <button class="more ghost" data-close="${t.id}">收合 ▴</button>`;
+      else if(open && items.length > PREVIEW)   foot = `<button class="more ghost" data-close="${t.id}">收合 ▴</button>`;
+      if(total > 0) foot += link;
+    }
+    const body = loading && !items.length ? `<div class="sec-load"><span class="dot"></span><span class="dot"></span><span class="dot"></span><br>搜尋 PubMed 中…</div>`
+      : total === 0 ? `<div class="sec-empty">此區間沒有符合條件的${t.zh}</div>`
+      : total == null ? `<div class="sec-empty">—</div>`
+      : vis.map(a => cardHTML(a, q, spName, tyName)).join("") + (loading ? `<div class="sec-load"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>` : "");
+    return `<section class="sec s-${t.id}" id="sec-${t.id}">
+      <button class="sec-head" data-toggle="${t.id}" aria-expanded="${open}">
+        <span class="sec-ic">${t.icon}</span>
+        <span class="sec-title">${t.zh}<span class="sec-en">${t.en}</span></span>
+        <span class="sec-cnt">${total == null ? "…" : fmtNum(total)}<small> 篇</small></span>
+        <span class="chev">${open ? "▴" : "▾"}</span>
+      </button>
+      <div class="sec-body">${body}${foot ? `<div class="sec-foot">${foot}</div>` : ""}</div>
+    </section>`;
+  }).join("");
+}
+
+function setRange(d){
+  state.range = d;
+  state.mode = d === 7 ? "week" : "live";
+  document.querySelectorAll("#range button").forEach(b => b.classList.toggle("on", +b.dataset.range === d));
+  $("weekBox").hidden = state.mode !== "week";
+  $("liveBox").hidden = state.mode !== "live";
+  $("rangeTxt").textContent = rangeLabel(d);
+  $("qBtn").hidden = state.mode !== "live";
+  $("optRel").hidden = state.mode !== "live";
+  if(state.mode !== "live" && $("sort").value === "relevance") $("sort").value = "entrez";
+  $("q").placeholder = state.mode === "live" ? "關鍵字（如 remimazolam、delirium），按 Enter 搜尋 PubMed" : "搜尋標題、摘要、作者、期刊…";
+  state.open = {};
+  if(state.mode === "live") runLive(); else render();
+}
+
+function render(){ renderChecks(); state.mode === "live" ? renderLive() : renderList(); renderMonitor(); }
 
 async function loadWeek(week){
   if(!week){ state.weekData = null; render(); return; }
-  $("list").innerHTML = `<div class="loading"><span class="dot"></span><span class="dot"></span><span class="dot"></span><br>誘導中… 資料載入中</div>`;
+  if(state.mode === "week") $("list").innerHTML = `<div class="loading"><span class="dot"></span><span class="dot"></span><span class="dot"></span><br>誘導中… 資料載入中</div>`;
   const r = await fetch(`data/weeks/${week}.json`, {cache:"no-cache"});
   state.weekData = await r.json();
   for(const a of state.weekData.articles) a.type = classify(a.pubtypes);
   state.open = {}; state.shown = {};
-  render();
+  if(state.mode === "week") render();
 }
 
 const WD = "日一二三四五六";
@@ -529,6 +820,8 @@ function nextMonday(){
 async function loadMethod(){
   try{
     const cfg = await (await fetch("subspecialties.json", {cache:"no-cache"})).json();
+    state.cfg = cfg;
+    if(state.mode === "live") runLive();
     $("mMax").textContent = cfg.max_per_category ?? 300;
     $("mKeep").textContent = cfg.keep_weeks ?? 26;
     $("mLang").textContent = cfg.language_filter ? (/english/i.test(cfg.language_filter) ? "英文（english[la]）" : cfg.language_filter) : "不限";
@@ -540,6 +833,15 @@ async function loadMethod(){
   }catch(e){
     $("mRaw").textContent = "無法載入 subspecialties.json";
   }
+}
+
+async function loadIFData(){
+  try{ state.metrics = await (await fetch("data/journal_metrics.json", {cache:"no-cache"})).json(); }catch(e){}
+  try{
+    const d = await (await fetch("journal_if.json", {cache:"no-cache"})).json();
+    state.ifLabel = d.label || "JCR";
+    state.ifOverride = Object.fromEntries(Object.entries(d.journals || {}).map(([k,v]) => [k.trim().toLowerCase(), v]));
+  }catch(e){}
 }
 
 async function init(){
@@ -557,25 +859,28 @@ async function init(){
   $("week").innerHTML = idx.weeks.map((w,i) =>
     `<option value="${w.week}">${w.from} – ${w.to}（${w.total} 篇）${i===0?"・最新":""}</option>`).join("");
   loadMethod();
+  loadIFData();
   await loadWeek(idx.weeks[0]?.week);
 }
 
 $("week").onchange = e => loadWeek(e.target.value);
-$("spAll").onclick  = () => { state.selSp = new Set(state.sp.map(s=>s.id)); store(); render(); };
-$("spNone").onclick = () => { state.selSp.clear(); store(); render(); };
-$("tyAll").onclick  = () => { state.selTy = new Set(TYPES.map(t=>t.id)); store(); render(); };
-$("tyNone").onclick = () => { state.selTy.clear(); store(); render(); };
+const afterFilter = () => { store(); if(state.mode === "live"){ render(); clearTimeout(liveTimer); liveTimer = setTimeout(runLive, 700); } else render(); };
+$("spAll").onclick  = () => { state.selSp = new Set(state.sp.map(s=>s.id)); afterFilter(); };
+$("spNone").onclick = () => { state.selSp.clear(); afterFilter(); };
+$("tyAll").onclick  = () => { state.selTy = new Set(TYPES.map(t=>t.id)); afterFilter(); };
+$("tyNone").onclick = () => { state.selTy.clear(); afterFilter(); };
 $("list").onclick = e => {
   const b = e.target.closest("button"); if(!b) return;
   const d = b.dataset;
-  const id = d.toggle || d.open || d.more || d.close; if(!id) return;
+  const id = d.toggle || d.open || d.more || d.close || d.livemore; if(!id) return;
   if(d.toggle) state.open[id] = !state.open[id];
   if(d.open)   state.open[id] = true;
   if(d.close)  state.open[id] = false;
+  if(d.livemore){ liveMore(d.livemore); return; }
   if(d.more)   state.shown[id] = (state.shown[id] || STEP) + STEP;
   if(state.open[id] && !state.shown[id]) state.shown[id] = STEP;
   if(!state.open[id]) state.shown[id] = STEP;
-  renderList();
+  state.mode === "live" ? renderLive() : renderList();
   if(d.close) document.getElementById("sec-"+id)?.scrollIntoView({behavior:"smooth", block:"start"});
 };
 document.addEventListener("change", e => {
@@ -583,10 +888,22 @@ document.addEventListener("change", e => {
   if(t.dataset.sp){ t.checked ? state.selSp.add(t.dataset.sp) : state.selSp.delete(t.dataset.sp); }
   else if(t.dataset.ty){ t.checked ? state.selTy.add(t.dataset.ty) : state.selTy.delete(t.dataset.ty); }
   else return;
-  store(); render();
+  store();
+  if(state.mode === "live"){
+    render();                                   // 先更新畫面
+    clearTimeout(liveTimer); liveTimer = setTimeout(runLive, 700);   // 停止勾選 0.7 秒後再搜尋
+  } else render();
 });
-let timer; $("q").oninput = () => { clearTimeout(timer); timer = setTimeout(renderList, 200); };
-$("sort").onchange = () => renderList();
+let liveTimer;
+let timer; $("q").oninput = () => { if(state.mode === "live") return; clearTimeout(timer); timer = setTimeout(renderList, 200); };
+$("q").onkeydown = e => { if(e.key === "Enter" && state.mode === "live"){ e.preventDefault(); $("q").blur(); runLive(); } };
+$("q").addEventListener("search", () => { if(state.mode === "live" && !$("q").value) runLive(); });
+$("qBtn").onclick = () => runLive();
+$("sort").onchange = () => {
+  if(state.mode !== "live") return renderList();
+  $("sort").value === "if" ? renderLive() : runLive();   // IF 排序只重排已載入的文章
+};
+document.querySelectorAll("#range button").forEach(b => b.onclick = () => setRange(+b.dataset.range));
 init();
 </script>
 </body>
