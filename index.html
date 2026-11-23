@@ -242,7 +242,7 @@
       <h3>① 資料來源與時間範圍</h3>
       <ul>
         <li>資料來源：美國國家醫學圖書館 <b>PubMed</b>（NCBI E-utilities API）。</li>
-        <li>每週一台北時間 08:00 左右自動執行，抓取<b>前 7 天（上週一至週日）新收錄進 PubMed</b> 的文章。</li>
+        <li>每週一台北時間 07:30 左右自動執行（11:20 另有備援；排程若延遲或失敗，下一次執行會自動補齊），抓取<b>前 7 天（上週一至週日）新收錄進 PubMed</b> 的文章。</li>
         <li>依 PubMed「收錄日 Entrez date」計算，因此包含線上搶先刊登（Epub ahead of print）的文章；收錄日與期刊出版日可能不同。</li>
       </ul>
     </div>
@@ -516,13 +516,13 @@ function fmtTime(iso){
   return `${p.y}/${p2(p.m)}/${p2(p.d)}（${WD[p.w]}）${p2(p.h)}:${p2(p.mi)}`;
 }
 function nextMonday(){
-  // 排程：每週一 00:00 UTC = 台北 08:00
-  const now = new Date();
-  const n = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-  do { n.setUTCDate(n.getUTCDate()+1); } while(n.getUTCDay() !== 1);
-  if(now.getUTCDay() === 1 && now.getUTCHours() < 1) n.setUTCDate(n.getUTCDate()-7);
-  const p = tpeParts(n);
-  return `${p.y}/${p2(p.m)}/${p2(p.d)}（一）08:00 左右`;
+  // 排程：週一 07:23（台北），整點避開尖峰；11:17 另有備援
+  const p = tpeParts(new Date());
+  const t = new Date(Date.UTC(p.y, p.m-1, p.d));
+  let add = (8 - p.w) % 7;                         // 到下個週一的天數（今天週一 = 0）
+  if(add === 0 && (p.h > 7 || (p.h === 7 && p.mi >= 30))) add = 7;
+  t.setUTCDate(t.getUTCDate() + add);
+  return `${t.getUTCFullYear()}/${p2(t.getUTCMonth()+1)}/${p2(t.getUTCDate())}（一）07:30 左右`;
 }
 
 // 讀取 subspecialties.json，顯示實際使用的參數與完整檢索式（與設定檔永遠同步）
