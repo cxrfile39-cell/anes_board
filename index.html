@@ -83,6 +83,9 @@
   .b-review{background:var(--c1);color:var(--on)}
   .b-meta{background:transparent;color:var(--c2);border-color:var(--c2)}
   .b-guideline{background:var(--c2);color:var(--on)}
+  .ifb{font:700 .72rem/1 "SF Mono",Menlo,Consolas,monospace;border-radius:5px;padding:3px 6px;cursor:help}
+  .ifb.oa{color:var(--c1);background:var(--c1-soft)}
+  .ifb.jcr{color:var(--on);background:var(--c2)}
   .tag{border:1px solid var(--line);border-radius:5px;padding:0 6px;font-size:.72rem}
   .card h3{font-size:1rem;margin:0 0 4px;line-height:1.4}
   .card h3 a{color:var(--ink);text-decoration:none} .card h3 a:hover{color:var(--c2);text-decoration:underline}
@@ -221,6 +224,7 @@
       <select id="sort">
         <option value="entrez">依 PubMed 收錄日</option>
         <option value="pub">依出版日期</option>
+        <option value="if">依 IF 高→低</option>
         <option value="journal">依期刊名稱</option>
       </select>
     </div>
@@ -293,8 +297,17 @@
     <div id="mRaw">載入中…</div>
   </details>
 
+  <div class="m-box" style="margin-top:16px">
+    <h3>⑥ 影響係數 Impact Factor</h3>
+    <ul>
+      <li><span class="ifb jcr">IF 9.1</span>：官方 Clarivate JCR 影響係數，由管理者手動填入 <code>journal_if.json</code>。</li>
+      <li><span class="ifb oa">IF≈ 6.2</span>：JCR 為付費資料無法自動取得，故其餘期刊使用 <b>OpenAlex「2 年平均被引次數」</b>（期刊前兩年文章在當年的平均被引用次數，計算方式與 IF 相同），每月自動更新。數值與 JCR 官方 IF 相近但不完全相同，僅供參考。</li>
+      <li>IF 反映的是期刊整體被引用情形，不代表單篇文章的品質。</li>
+    </ul>
+  </div>
+
   <div class="m-box m-note">
-    <h3>⑥ 使用限制</h3>
+    <h3>⑦ 使用限制</h3>
     <ul>
       <li>分類以期刊名稱與關鍵字自動判定，可能有誤收或漏收；同一篇文章可能同時出現在多個次專科。</li>
       <li>新收錄的文章通常尚未完成 MeSH 標引，初期主要依標題與摘要比對。</li>
@@ -407,8 +420,17 @@ function filtered(){
     entrez:(a,b)=> (b.entrez||"").localeCompare(a.entrez||"") || (b.sortdate||"").localeCompare(a.sortdate||""),
     pub:(a,b)=> (b.sortdate||"").localeCompare(a.sortdate||""),
     journal:(a,b)=> a.journal.localeCompare(b.journal),
+    if:(a,b)=> (b.if ?? -1) - (a.if ?? -1) || (b.entrez||"").localeCompare(a.entrez||""),
   }[s];
   return arts.slice().sort(cmp);
+}
+
+function ifBadge(a){
+  if(a.if == null) return "";
+  const v = Number(a.if).toFixed(1);
+  return a.if_src && a.if_src !== "OA"
+    ? `<span class="ifb jcr" title="${esc(a.if_src)} Impact Factor">IF ${v}</span>`
+    : `<span class="ifb oa" title="OpenAlex 2 年平均被引次數（計算方式同 IF，非 JCR 官方數值）">IF≈ ${v}</span>`;
 }
 
 function cardHTML(a, q, spName, tyName){
@@ -416,7 +438,7 @@ function cardHTML(a, q, spName, tyName){
   return `<article class="card t-${a.type}">
     <div class="meta">
       <span class="badge b-${a.type}">${tyName[a.type]}</span>
-      <span>${esc(a.journal)}</span><span>·</span><span>${esc(a.pubdate)}</span>
+      <span>${esc(a.journal)}</span>${ifBadge(a)}<span>·</span><span>${esc(a.pubdate)}</span>
       ${a.categories.map(c=>`<span class="tag">${ic(c)}${esc(spName[c]||c)}</span>`).join("")}
     </div>
     <h3><a href="https://pubmed.ncbi.nlm.nih.gov/${a.pmid}/" target="_blank" rel="noopener">${highlight(a.title, q)}</a></h3>
