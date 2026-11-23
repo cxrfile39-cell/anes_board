@@ -1,0 +1,22 @@
+{
+  "_note": "選填：在這裡填入官方 JCR Impact Factor（數字），網站會優先顯示這裡的值；留 null 則自動使用 OpenAlex 2 年平均被引。鍵可用期刊縮寫（與網站顯示相同）或 ISSN。",
+  "label": "JCR",
+  "journals": {
+    "Anesthesiology": null,
+    "Br J Anaesth": null,
+    "Anesth Analg": null,
+    "Anaesthesia": null,
+    "Eur J Anaesthesiol": null,
+    "Can J Anaesth": null,
+    "J Clin Anesth": null,
+    "Reg Anesth Pain Med": null,
+    "J Cardiothorac Vasc Anesth": null,
+    "J Neurosurg Anesthesiol": null,
+    "Paediatr Anaesth": null,
+    "Int J Obstet Anesth": null,
+    "Crit Care Med": null,
+    "Intensive Care Med": null,
+    "Crit Care": null,
+    "Pain": null
+  }
+}
