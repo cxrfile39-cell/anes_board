@@ -24,6 +24,11 @@
 "if": 4.26,
 "name": "Acta Obstetricia Et Gynecologica Scandinavica"
 },
+"0001-7310": {
+"checked": "2026-11-23",
+"if": 0.79,
+"name": "Actas Dermo-Sifiliográficas"
+},
 "0002-0729": {
 "checked": "2026-11-23",
 "if": 2.69,
@@ -108,6 +113,11 @@
 "checked": "2026-11-23",
 "if": 6.64,
 "name": "British Journal of Pharmacology"
+},
+"0007-1323": {
+"checked": "2026-11-23",
+"if": 0.64,
+"name": "British journal of surgery"
 },
 "0008-428X": {
 "checked": "2026-11-23",
@@ -419,6 +429,11 @@
 "if": 1.36,
 "name": "Pacing and Clinical Electrophysiology"
 },
+"0147-9563": {
+"checked": "2026-11-23",
+"if": 2.69,
+"name": "Heart & Lung"
+},
 "0148-7043": {
 "checked": "2026-11-23",
 "if": 1.81,
@@ -478,6 +493,11 @@
 "checked": "2026-11-23",
 "if": 0.97,
 "name": "Annals of Emergency Medicine"
+},
+"0197-3851": {
+"checked": "2026-11-23",
+"if": 2.62,
+"name": "Prenatal Diagnosis"
 },
 "0214-1221": {
 "checked": "2026-11-23",
@@ -548,6 +568,11 @@
 "checked": "2026-11-23",
 "if": 1.68,
 "name": "Tumori Journal"
+},
+"0301-1569": {
+"checked": "2026-11-23",
+"if": 1.79,
+"name": "ORL"
 },
 "0301-2115": {
 "checked": "2026-11-23",
@@ -669,6 +694,11 @@
 "if": 1.75,
 "name": "La Pediatria Medica e Chirurgica"
 },
+"0425-1644": {
+"checked": "2026-11-23",
+"if": 1.19,
+"name": "Equine Veterinary Journal"
+},
 "0724-4983": {
 "checked": "2026-11-23",
 "if": 3.42,
@@ -733,6 +763,11 @@
 "checked": "2026-11-23",
 "if": 2.1,
 "name": "Journal of Critical Care"
+},
+"0885-0666": {
+"checked": "2026-11-23",
+"if": 3.11,
+"name": "Journal of Intensive Care Medicine"
 },
 "0886-022X": {
 "checked": "2026-11-23",
@@ -1079,6 +1114,11 @@
 "if": 2.2,
 "name": "The Cleft Palate-Craniofacial Journal"
 },
+"1055-8586": {
+"checked": "2026-11-23",
+"if": 3.0,
+"name": "Seminars in Pediatric Surgery"
+},
 "1058-2916": {
 "checked": "2026-11-23",
 "if": 0.93,
@@ -1243,6 +1283,11 @@
 "checked": "2026-11-23",
 "if": 1.96,
 "name": "Journal of Surgical Oncology"
+},
+"1097-0223": {
+"checked": "2026-11-23",
+"if": 2.62,
+"name": "Prenatal Diagnosis"
 },
 "1097-0347": {
 "checked": "2026-11-23",
@@ -1444,6 +1489,11 @@
 "if": 0.78,
 "name": "Turkish Journal of Thoracic and Cardiovascular Surgery"
 },
+"1304-0855": {
+"checked": "2026-11-23",
+"if": 0.79,
+"name": "Experimental and Clinical Transplantation"
+},
 "1308-8734": {
 "checked": "2026-11-23",
 "if": 3.43,
@@ -1524,6 +1574,11 @@
 "if": 6.2,
 "name": "Annals of Medicine"
 },
+"1365-2168": {
+"checked": "2026-11-23",
+"if": 0.64,
+"name": "British journal of surgery"
+},
 "1365-229X": {
 "checked": "2026-11-23",
 "if": 2.22,
@@ -1549,10 +1604,20 @@
 "if": 3.69,
 "name": "Archives of Physiology and Biochemistry"
 },
+"1386-0291": {
+"checked": "2026-11-23",
+"if": 2.43,
+"name": "Clinical Hemorheology and Microcirculation"
+},
 "1386-341X": {
 "checked": "2026-11-23",
 "if": 4.07,
 "name": "Pituitary"
+},
+"1386-5056": {
+"checked": "2026-11-23",
+"if": 7.79,
+"name": "International Journal of Medical Informatics"
 },
 "1396-5883": {
 "checked": "2026-11-23",
@@ -1603,6 +1668,11 @@
 "checked": "2026-11-23",
 "if": 3.47,
 "name": "Gerontology"
+},
+"1423-0275": {
+"checked": "2026-11-23",
+"if": 1.79,
+"name": "ORL"
 },
 "1423-0305": {
 "checked": "2026-11-23",
@@ -1929,6 +1999,11 @@
 "if": 9.8,
 "name": "BMC Medical Informatics and Decision Making"
 },
+"1472-6955": {
+"checked": "2026-11-23",
+"if": 9.17,
+"name": "BMC Nursing"
+},
 "1472-6963": {
 "checked": "2026-11-23",
 "if": 5.6,
@@ -2059,6 +2134,11 @@
 "if": 2.54,
 "name": "Circulation"
 },
+"1525-1489": {
+"checked": "2026-11-23",
+"if": 3.11,
+"name": "Journal of Intensive Care Medicine"
+},
 "1525-1594": {
 "checked": "2026-11-23",
 "if": 1.89,
@@ -2103,6 +2183,11 @@
 "checked": "2026-11-23",
 "if": 4.69,
 "name": "Current Urology Reports"
+},
+"1527-3288": {
+"checked": "2026-11-23",
+"if": 2.69,
+"name": "Heart & Lung"
 },
 "1527-3792": {
 "checked": "2026-11-23",
@@ -2283,6 +2368,11 @@
 "checked": "2026-11-23",
 "if": 1.01,
 "name": "Regional Anesthesia & Pain Medicine"
+},
+"1532-9453": {
+"checked": "2026-11-23",
+"if": 3.0,
+"name": "Seminars in Pediatric Surgery"
 },
 "1533-2500": {
 "checked": "2026-11-23",
@@ -2479,6 +2569,11 @@
 "if": 1.89,
 "name": "Pediatric Blood & Cancer"
 },
+"1547-5646": {
+"checked": "2026-11-23",
+"if": 4.16,
+"name": "Journal of Neurosurgery Spine"
+},
 "1550-5154": {
 "checked": "2026-11-23",
 "if": 1.47,
@@ -2674,6 +2769,11 @@
 "if": 4.07,
 "name": "Pituitary"
 },
+"1578-2190": {
+"checked": "2026-11-23",
+"if": 0.79,
+"name": "Actas Dermo-Sifiliográficas"
+},
 "1578-2735": {
 "checked": "2026-11-23",
 "if": 2.26,
@@ -2728,6 +2828,16 @@
 "checked": "2026-11-23",
 "if": 2.86,
 "name": "European Journal Of Haematology"
+},
+"1600-6135": {
+"checked": "2026-11-23",
+"if": 5.24,
+"name": "American Journal of Transplantation"
+},
+"1600-6143": {
+"checked": "2026-11-23",
+"if": 5.24,
+"name": "American Journal of Transplantation"
 },
 "1615-5947": {
 "checked": "2026-11-23",
@@ -3014,6 +3124,11 @@
 "if": 5.16,
 "name": "Therapeutic Advances in Cardiovascular Disease"
 },
+"1754-9493": {
+"checked": "2026-11-23",
+"if": 5.07,
+"name": "Patient Safety in Surgery"
+},
 "1755-5930": {
 "checked": "2026-11-23",
 "if": 6.83,
@@ -3149,6 +3264,11 @@
 "if": 3.74,
 "name": "Clinical Research in Cardiology"
 },
+"1862-3514": {
+"checked": "2026-11-23",
+"if": 3.24,
+"name": "Archives of Osteoporosis"
+},
 "1863-2483": {
 "checked": "2026-11-23",
 "if": 5.14,
@@ -3218,6 +3338,11 @@
 "checked": "2026-11-23",
 "if": 2.17,
 "name": "European Journal of Obstetrics & Gynecology and Reproductive Biology"
+},
+"1872-8243": {
+"checked": "2026-11-23",
+"if": 7.79,
+"name": "International Journal of Medical Informatics"
 },
 "1872-8464": {
 "checked": "2026-11-23",
@@ -3298,6 +3423,11 @@
 "checked": "2026-11-23",
 "if": 1.84,
 "name": "Current Neurovascular Research"
+},
+"1875-8622": {
+"checked": "2026-11-23",
+"if": 2.43,
+"name": "Clinical Hemorheology and Microcirculation"
 },
 "1876-7931": {
 "checked": "2026-11-23",
@@ -3694,10 +3824,20 @@
 "if": 3.67,
 "name": "Infectious Disease Reports"
 },
+"2038-131X": {
+"checked": "2026-11-23",
+"if": 2.74,
+"name": "Updates in Surgery"
+},
 "2038-2529": {
 "checked": "2026-11-23",
 "if": 1.68,
 "name": "Tumori Journal"
+},
+"2038-3312": {
+"checked": "2026-11-23",
+"if": 2.74,
+"name": "Updates in Surgery"
 },
 "2038-8322": {
 "checked": "2026-11-23",
@@ -3708,6 +3848,11 @@
 "checked": "2026-11-23",
 "if": 4.46,
 "name": "Clinics and Practice"
+},
+"2042-3306": {
+"checked": "2026-11-23",
+"if": 1.19,
+"name": "Equine Veterinary Journal"
 },
 "2042-6976": {
 "checked": "2026-11-23",
@@ -3733,6 +3878,11 @@
 "checked": "2026-11-23",
 "if": 2.57,
 "name": "Pulmonary Circulation"
+},
+"2045-9912": {
+"checked": "2026-11-23",
+"if": 3.99,
+"name": "Medical Gas Research"
 },
 "2047-0525": {
 "checked": "2026-11-23",
@@ -3923,6 +4073,11 @@
 "checked": "2026-11-23",
 "if": 7.81,
 "name": "Annals of Intensive Care"
+},
+"2146-8427": {
+"checked": "2026-11-23",
+"if": 0.79,
+"name": "Experimental and Clinical Transplantation"
 },
 "2149-276X": {
 "checked": "2026-11-23",
@@ -4184,6 +4339,11 @@
 "if": 6.05,
 "name": "Frontiers in Public Health"
 },
+"2296-634X": {
+"checked": "2026-11-23",
+"if": 5.73,
+"name": "Frontiers in Cell and Developmental Biology"
+},
 "2296-858X": {
 "checked": "2026-11-23",
 "if": 4.68,
@@ -4359,10 +4519,20 @@
 "if": 1.66,
 "name": "The Journal of Critical Care Medicine"
 },
+"2397-5776": {
+"checked": "2026-11-23",
+"if": 2.33,
+"name": "Trauma Surgery & Acute Care Open"
+},
 "2397-7523": {
 "checked": "2026-11-23",
 "if": 6.02,
 "name": "Diagnostic and Prognostic Research"
+},
+"2399-3642": {
+"checked": "2026-11-23",
+"if": 7.2,
+"name": "Communications Biology"
 },
 "2399-6641": {
 "checked": "2026-11-23",
@@ -4429,6 +4599,11 @@
 "if": 1.93,
 "name": "Journal of Shoulder and Elbow Arthroplasty"
 },
+"2472-0054": {
+"checked": "2026-11-23",
+"if": 1.25,
+"name": "Pediatric Quality and Safety"
+},
 "2474-1949": {
 "checked": "2026-11-23",
 "if": 0.82,
@@ -4453,6 +4628,11 @@
 "checked": "2026-11-23",
 "if": 5.09,
 "name": "BJS Open"
+},
+"2475-0379": {
+"checked": "2026-11-23",
+"if": 0.94,
+"name": "Research and Practice in Thrombosis and Haemostasis"
 },
 "2491-0929": {
 "checked": "2026-11-23",
@@ -4528,6 +4708,11 @@
 "checked": "2026-11-23",
 "if": 5.59,
 "name": "iScience"
+},
+"2589-5141": {
+"checked": "2026-11-23",
+"if": 1.98,
+"name": "Journal of Hand Surgery Global Online"
 },
 "2590-0889": {
 "checked": "2026-11-23",
@@ -4623,6 +4808,11 @@
 "checked": "2026-11-23",
 "if": 14.29,
 "name": "MedComm"
+},
+"2689-0186": {
+"checked": "2026-11-23",
+"if": 5.99,
+"name": "JAMA Health Forum"
 },
 "2691-171X": {
 "checked": "2026-11-23",
