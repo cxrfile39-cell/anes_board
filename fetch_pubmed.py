@@ -147,6 +147,8 @@ def parse_articles(xml_bytes):
             "abstract": "\n".join(abstract_parts),
             "authors": authors,
             "journal": art.findtext("Journal/ISOAbbreviation") or art.findtext("Journal/Title") or "",
+            "journal_full": art.findtext("Journal/Title") or "",
+            "issn": sorted({x.text.strip() for x in art.findall("Journal/ISSN") + mc.findall("MedlineJournalInfo/ISSNLinking") if x is not None and x.text}),
             "pubdate": disp,
             "sortdate": iso,
             "entrez": entrez_date(a),
@@ -168,7 +170,110 @@ def fetch_details(pmids):
     return results
 
 
+# ---------------- 影響係數 (Impact Factor) ----------------
+OPENALEX = "https://api.openalex.org/sources"
+OPENALEX_KEY = os.environ.get("OPENALEX_API_KEY", "").strip()
+METRICS_FILE = DATA / "journal_metrics.json"
+OVERRIDE_FILE = ROOT / "journal_if.json"
+METRICS_MAX_AGE = 30  # 天；超過就重新向 OpenAlex 查詢
+
+
+def openalex_lookup(issns):
+    """回傳 {issn: {"if": 2年平均被引, "name": 期刊名}}；失敗時回傳已查到的部分，不讓整個流程中斷。"""
+    found = {}
+    issns = list(issns)
+    for i in range(0, len(issns), 50):
+        batch = issns[i:i + 50]
+        params = {"filter": "issn:" + "|".join(batch), "per-page": 200,
+                  "select": "display_name,issn,issn_l,summary_stats"}
+        if EMAIL:
+            params["mailto"] = EMAIL
+        if OPENALEX_KEY:
+            params["api_key"] = OPENALEX_KEY
+        url = OPENALEX + "?" + urllib.parse.urlencode(params)
+        for attempt in range(3):
+            try:
+                time.sleep(0.2)
+                req = urllib.request.Request(url, headers={"User-Agent": "anesth-digest/1.0"})
+                with urllib.request.urlopen(req, timeout=60) as r:
+                    res = json.loads(r.read())
+                for src in res.get("results", []):
+                    v = (src.get("summary_stats") or {}).get("2yr_mean_citedness")
+                    for x in (src.get("issn") or []) + [src.get("issn_l")]:
+                        if x and x in batch:
+                            found[x] = {"if": v, "name": src.get("display_name")}
+                break
+            except Exception as e:  # noqa: BLE001
+                print(f"  ! OpenAlex 查詢失敗（{e}）", file=sys.stderr)
+                time.sleep(3 * (attempt + 1))
+    return found
+
+
+def load_overrides():
+    """journal_if.json：手動填入的官方 JCR IF，以期刊縮寫（ISO abbreviation）或 ISSN 為鍵。"""
+    if not OVERRIDE_FILE.exists():
+        return {}, ""
+    try:
+        d = json.loads(OVERRIDE_FILE.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        print(f"  ! journal_if.json 格式錯誤：{e}", file=sys.stderr)
+        return {}, ""
+    vals = {k.strip().lower(): v for k, v in (d.get("journals") or {}).items() if isinstance(v, (int, float))}
+    return vals, d.get("label", "JCR")
+
+
+def enrich_all_weeks():
+    """替所有週次檔補上 ISSN 與 IF（舊資料沒有 ISSN 時，依 PMID 重新向 PubMed 取得）。"""
+    files = sorted(WEEKS.glob("*.json"))
+    weeks = {f: json.loads(f.read_text(encoding="utf-8")) for f in files}
+
+    missing = [a["pmid"] for d in weeks.values() for a in d["articles"] if "issn" not in a]
+    if missing:
+        print(f"補抓舊資料的 ISSN：{len(missing)} 篇")
+        got = {a["pmid"]: a for a in fetch_details(missing)}
+        for d in weeks.values():
+            for a in d["articles"]:
+                if "issn" not in a and a["pmid"] in got:
+                    a["issn"] = got[a["pmid"]]["issn"]
+                    a["journal_full"] = got[a["pmid"]]["journal_full"]
+
+    cache = json.loads(METRICS_FILE.read_text(encoding="utf-8")) if METRICS_FILE.exists() else {}
+    today = date.today()
+    all_issn = {x for d in weeks.values() for a in d["articles"] for x in a.get("issn", [])}
+    stale = [x for x in all_issn
+             if x not in cache or (today - date.fromisoformat(cache[x].get("checked", "2000-01-01"))).days > METRICS_MAX_AGE]
+    if stale:
+        print(f"查詢 OpenAlex 期刊指標：{len(stale)} 個 ISSN")
+        found = openalex_lookup(stale)
+        for x in stale:
+            if x in found:
+                cache[x] = {**found[x], "checked": today.isoformat()}
+            elif x not in cache:
+                cache[x] = {"if": None, "name": None, "checked": today.isoformat()}
+    METRICS_FILE.write_text(json.dumps(cache, ensure_ascii=False, indent=0, sort_keys=True), encoding="utf-8")
+
+    overrides, label = load_overrides()
+    for f, d in weeks.items():
+        for a in d["articles"]:
+            a.pop("if", None); a.pop("if_src", None)
+            keys = [a.get("journal", "").lower()] + [x.lower() for x in a.get("issn", [])]
+            ov = next((overrides[k] for k in keys if k in overrides), None)
+            if ov is not None:
+                a["if"], a["if_src"] = round(float(ov), 1), label
+                continue
+            vals = [cache[x]["if"] for x in a.get("issn", []) if cache.get(x, {}).get("if") is not None]
+            if vals:
+                a["if"], a["if_src"] = round(max(vals), 1), "OA"
+        f.write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+
+
 def main():
+    if "--enrich-only" in sys.argv:
+        # 不抓新文獻，只替既有資料補上／更新 IF
+        if WEEKS.exists():
+            enrich_all_weeks()
+            print("已更新既有資料的 IF")
+        return
     cfg = json.loads(CONFIG.read_text(encoding="utf-8"))
     days = int(os.environ.get("DAYS") or 7)
     tpe = timezone(timedelta(hours=8))
@@ -214,6 +319,11 @@ def main():
     for old in files[cfg.get("keep_weeks", 26):]:
         old.unlink()
     files = sorted(WEEKS.glob("*.json"), reverse=True)
+
+    try:
+        enrich_all_weeks()
+    except Exception as e:  # noqa: BLE001  IF 只是加值資訊，失敗不影響主要更新
+        print(f"  ! 加入 IF 失敗，略過：{e}", file=sys.stderr)
 
     weeks = []
     for f in files:
