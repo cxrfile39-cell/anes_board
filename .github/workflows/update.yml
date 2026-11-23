@@ -2,13 +2,14 @@ name: Weekly update
 
 on:
   schedule:
-    - cron: "0 0 * * 1"   # Monday 08:00 Taipei time
+    - cron: "23 23 * * 0"   # Monday 07:23 Taipei (off-peak minute, less delay)
+    - cron: "17 3 * * 1"    # Monday 11:17 Taipei backup; does nothing if already updated
   workflow_dispatch:
     inputs:
       days:
-        description: "Days to fetch"
+        description: "Days to fetch (leave blank = auto)"
         required: false
-        default: "7"
+        default: ""
   push:
     branches: [main]
     paths: ["index.html", "fetch_pubmed.py", "subspecialties.json", "journal_if.json", ".github/workflows/**"]
@@ -39,18 +40,23 @@ jobs:
         run: |
           if [ ! -f data/index.json ]; then
             DAYS=28 python fetch_pubmed.py
-          elif [ "${{ github.event_name }}" != "push" ]; then
-            DAYS=${INPUT_DAYS:-7} python fetch_pubmed.py
+          elif [ -n "$INPUT_DAYS" ]; then
+            DAYS=$INPUT_DAYS python fetch_pubmed.py
           else
-            python fetch_pubmed.py --enrich-only
+            python fetch_pubmed.py --auto
           fi
       - name: Commit data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data
-          git diff --cached --quiet || git commit -m "Weekly update $(date -u +%Y-%m-%d)"
-          git push
+          git diff --cached --quiet && exit 0
+          git commit -m "Weekly update $(date -u +%Y-%m-%d)"
+          for i in 1 2 3; do
+            git pull --rebase && git push && exit 0
+            sleep 5
+          done
+          exit 1
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
