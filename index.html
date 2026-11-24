@@ -166,6 +166,8 @@
   a.pm-all{font-size:.82rem;color:var(--c1);align-self:center;text-decoration:none;font-weight:600}
   a.pm-all:hover{color:var(--c2);text-decoration:underline}
   .tagwait{font-size:.72rem;color:var(--muted)}
+  .zh{font-size:.9rem;line-height:1.6;margin:4px 0 6px;padding:6px 10px;background:var(--c2-soft);border-radius:8px}
+  .zh-tag{display:inline-block;font-size:.7rem;font-weight:700;color:var(--on);background:var(--c2);border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px;cursor:help}
   footer{color:var(--muted);font-size:.78rem;text-align:center;padding:16px 16px 30px;border-top:3px solid var(--c1);max-width:1180px;margin:0 auto}
   /* 手機：篩選清單改兩欄精簡版（放最後以覆蓋前面規則） */
   @media (max-width:860px){
@@ -337,8 +339,17 @@
     </ul>
   </div>
 
+  <div class="m-box" style="margin-top:16px">
+    <h3>⑦ 中文重點</h3>
+    <ul>
+      <li>每週更新後，由 <b>Claude（Anthropic AI）</b>依各篇的標題與摘要，自動撰寫一句繁體中文重點。</li>
+      <li>只根據 PubMed 公開的標題與摘要撰寫，不含全文內容；可能有錯誤或遺漏，<b>請以原文為準</b>，不可作為臨床決策依據。</li>
+      <li>即時搜尋（30 天／1 年／2 年）的結果不提供中文重點。</li>
+    </ul>
+  </div>
+
   <div class="m-box m-note">
-    <h3>⑦ 使用限制</h3>
+    <h3>⑧ 使用限制</h3>
     <ul>
       <li>分類以期刊名稱與關鍵字自動判定，可能有誤收或漏收；同一篇文章可能同時出現在多個次專科。</li>
       <li>新收錄的文章通常尚未完成 MeSH 標引，初期主要依標題與摘要比對。</li>
@@ -457,7 +468,7 @@ function filtered(){
   const q = $("q").value.trim().toLowerCase();
   let arts = (state.weekData?.articles || []).filter(a =>
     state.selTy.has(a.type) && a.categories.some(c => state.selSp.has(c)) &&
-    (!q || (a.title+" "+a.abstract+" "+a.authors.join(" ")+" "+a.journal).toLowerCase().includes(q)));
+    (!q || (a.title+" "+a.abstract+" "+a.authors.join(" ")+" "+a.journal+" "+(a.zh||"")).toLowerCase().includes(q)));
   const s = $("sort").value;
   const cmp = {
     entrez:(a,b)=> (b.entrez||"").localeCompare(a.entrez||"") || (b.sortdate||"").localeCompare(a.sortdate||""),
@@ -485,6 +496,7 @@ function cardHTML(a, q, spName, tyName){
       ${a.categories ? a.categories.map(c=>`<span class="tag">${ic(c)}${esc(spName[c]||c)}</span>`).join("") : `<span class="tagwait">次專科標記中…</span>`}
     </div>
     <h3><a href="https://pubmed.ncbi.nlm.nih.gov/${a.pmid}/" target="_blank" rel="noopener">${highlight(a.title, q)}</a></h3>
+    ${a.zh ? `<div class="zh"><span class="zh-tag" title="由 Claude 依標題與摘要自動撰寫，僅供參考，請以原文為準">中文重點</span>${highlight(a.zh, q)}</div>` : ""}
     <div class="authors">${highlight(au, q)}</div>
     ${a.abstract ? `<details><summary>摘要 Abstract</summary><p>${highlight(a.abstract, q)}</p></details>` : ""}
     <div class="links">
@@ -790,7 +802,9 @@ async function loadWeek(week){
   if(state.mode === "week") $("list").innerHTML = `<div class="loading"><span class="dot"></span><span class="dot"></span><span class="dot"></span><br>誘導中… 資料載入中</div>`;
   const r = await fetch(`data/weeks/${week}.json`, {cache:"no-cache"});
   state.weekData = await r.json();
-  for(const a of state.weekData.articles) a.type = classify(a.pubtypes);
+  let zh = {};
+  try{ const z = await fetch(`data/zh/${week}.json`, {cache:"no-cache"}); if(z.ok) zh = (await z.json()).items || {}; }catch(e){}
+  for(const a of state.weekData.articles){ a.type = classify(a.pubtypes); if(zh[a.pmid]) a.zh = zh[a.pmid]; }
   state.open = {}; state.shown = {};
   if(state.mode === "week") render();
 }
