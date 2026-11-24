@@ -12,7 +12,7 @@ on:
         default: ""
   push:
     branches: [main]
-    paths: ["index.html", "fetch_pubmed.py", "subspecialties.json", "journal_if.json", ".github/workflows/**"]
+    paths: ["index.html", "fetch_pubmed.py", "subspecialties.json", "journal_if.json", "data/zh/**", ".github/workflows/**"]
 
 permissions:
   contents: write
