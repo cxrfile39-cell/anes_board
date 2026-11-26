@@ -169,6 +169,7 @@
   .zh{font-size:.9rem;line-height:1.6;margin:4px 0 6px;padding:6px 10px;background:var(--c2-soft);border-radius:8px}
   .zh-tag{display:inline-block;font-size:.7rem;font-weight:700;color:var(--on);background:var(--c2);border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px;cursor:help}
   .stamp span.views{background:rgba(255,255,255,.14);color:#fff;font-weight:500}
+  .stamp[hidden]{display:none}
   .stamp span.views b{color:#ffd0a8;font-variant-numeric:tabular-nums}
   .stamp span.views span{background:none;padding:0;border-radius:0;font-weight:inherit;font-size:inherit;color:inherit}
   footer{color:var(--muted);font-size:.78rem;text-align:center;padding:16px 16px 30px;border-top:3px solid var(--c1);max-width:1180px;margin:0 auto}
@@ -196,7 +197,7 @@
       <div class="sub">Anesthesiology Subspecialties · 最新期刊論文 / 綜述 / 指引 · 每週一自動更新（資料來源：PubMed）</div>
       <div class="sub">製作者：JH CHIU MD × Claude Opus 5.5　·　<a class="hlink" href="#method">搜尋邏輯說明 ↓</a></div>
       <div class="stamp" id="updated"></div>
-      <div class="stamp"><span class="views" id="busuanzi_container_site_pv" style="display:none">👁 總瀏覽 <b id="busuanzi_value_site_pv">-</b> 次<span id="busuanzi_container_site_uv">　·　訪客 <b id="busuanzi_value_site_uv">-</b> 人</span></span></div>
+      <div class="stamp" id="viewsBox" hidden><span class="views">👁 累計瀏覽 <b id="viewsNum">-</b> 人次</span></div>
     </div>
     <div class="monitor" aria-label="本週文獻統計">
       <div class="cell m-art"><div class="lbl"><span>ORIG</span></div><div class="val" id="mOri">--</div><div class="unit">原始研究</div></div>
@@ -365,7 +366,7 @@
 <footer>
   <svg class="fico" viewBox="0 0 90 22" aria-hidden="true"><path d="M0 19H12L16 6Q32 4 44 3L48 19H58L62 6Q74 4 84 3L88 19" fill="none" stroke="var(--c2)" stroke-width="2" stroke-linejoin="round"/></svg>
   製作者：JH CHIU MD × Claude Opus 5.5<br>
-  瀏覽人次統計由「不蒜子」提供（同一訪客 24 小時內重複瀏覽只算一位訪客）<br>
+  瀏覽人次統計由 GoatCounter 提供（不使用 cookie、不收集個人資料）<br>
   資料由 NCBI PubMed E-utilities 自動擷取，分類依關鍵字與期刊檢索式，僅供參考。
 </footer>
 
@@ -925,9 +926,20 @@ $("sort").onchange = () => {
 document.querySelectorAll("#range button").forEach(b => b.onclick = () => setRange(+b.dataset.range));
 init();
 </script>
-<!-- 瀏覽人次統計：不蒜子 busuanzi（免註冊，載入失敗時自動隱藏，不影響網站） -->
-<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<!-- 詳細瀏覽分析：GoatCounter（後台 https://cxrfile2.goatcounter.com） -->
+<!-- 瀏覽統計：GoatCounter（後台 https://cxrfile2.goatcounter.com） -->
+<script>
+// 顯示全站累計瀏覽人次（需在 GoatCounter 設定開啟 "Allow adding visitor counts on your website"）；失敗時自動隱藏
+(function(){
+  fetch("https://cxrfile2.goatcounter.com/counter/TOTAL.json")
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(d){
+      if(d && d.count != null){
+        document.getElementById("viewsNum").textContent = d.count;
+        document.getElementById("viewsBox").hidden = false;
+      }
+    }).catch(function(){});
+})();
+</script>
 <script data-goatcounter="https://cxrfile2.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
